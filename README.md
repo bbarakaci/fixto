@@ -3,7 +3,7 @@
 Fix containers to viewport according to an ancestor.
 
 ## Getting Started
-- Download the [production version][min] or the [development version][max].
+Download the [production version][min] or the [development version][max].
 
 [min]: https://raw.github.com/bbarakaci/fixto/master/dist/fixto.min.js
 [max]: https://raw.github.com/bbarakaci/fixto/master/dist/fixto.js
