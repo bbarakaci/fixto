@@ -5,8 +5,8 @@ Fix containers to viewport according to an ancestor.
 ## Getting Started
 - Download the [production version][min] or the [development version][max].
 
-[min]: https://raw.github.com/burakbarakaci/fixto/master/dist/fixto.min.js
-[max]: https://raw.github.com/burakbarakaci/fixto/master/dist/fixto.js
+[min]: https://raw.github.com/bbarakaci/fixto/master/dist/fixto.min.js
+[max]: https://raw.github.com/bbarakaci/fixto/master/dist/fixto.js
 
 Add jQuery
 
@@ -22,7 +22,7 @@ Use it with jQuery
 
     $('#nav').fixTo('body');
     
-You can fix multiple container to multiple ancestors. Make sure your selectors match exactly.
+You can fix multiple containers to multiple ancestors. Make sure your selectors match exactly.
 
     $('.sticky').fixTo('.sticky-holder');
     
@@ -32,7 +32,7 @@ Usage without jQuery
 
 ## Styling
 
-When the container is fixed, it will receive the class name *fixto-fixed* . You may use this class for styling or you may pass any other class name by passing as an option.
+When the container is fixed, it will receive the class name `fixto-fixed` . You may use this class for styling or you may pass any other class name by passing as an option.
     
 Example
 
