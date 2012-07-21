@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<style>
+  .box {
+    height:300px; width:300px; background: red;
+  }
+  .child{
+    height:50px;width:50px;background:yellow;
+  }
+  #list li{
+    margin-bottom:20px;
+  }
+</style>
+
+</head>
+<body style="">
+  
+  <div style="background:pink;clear:both" id="pinky">
+  #pinky
+  </div>
+  
+  
+  <div id="left" style="margin-left:30px;float:left">
+    
+    <div style="width:300px;height:300px;background:black"></div>
+    <div id="father" class="box">
+      <div style="float:left"><div id="child" class="child">#child</div></div>
+    </div>
+    <div style="width:300px;height:300px;background:black"></div>    
+  </div>
+  
+  <div style="float:left">
+    
+    <ul id="list">
+      <li class="box"><div class="child"></div></li>
+      <li class="box"><div style="width:70px;height:70px;background:gray"></div><div class="child"></div><div style="width:70px;height:70px;background:gray"></div></li>
+      <li class="box"><div class="child"></div></li>
+    </ul>
+  </div>
+  
+  <div style="float:left;position:relative;top:200px">
+    
+    <ul id="list2">
+      <li class="box"><div class="child"></div></li>
+      <li class="box"><div class="child"></div></li>
+      <li class="box"><div class="child"></div></li>
+      <li class="box"><div class="child"></div></li>
+      <li class="box"><div class="child"></div></li>
+      <li class="box"><div class="child"></div></li>
+      <li class="box"><div class="child"></div></li>
+      <li class="box"><div class="child"></div></li>
+      <li class="box"><div class="child"></div></li>
+      <li class="box"><div class="child"></div></li>
+      <li class="box"><div class="child"></div></li>
+      <li class="box"><div class="child"></div></li>
+      <li class="box"><div class="child"></div></li>
+      <li class="box"><div class="child"></div></li>
+      <li class="box"><div class="child"></div></li>
+      <li class="box"><div class="child"></div></li>
+      <li class="box"><div class="child"></div></li>
+      <li class="box"><div class="child"></div></li>
+      <li class="box"><div class="child"></div></li>
+      <li class="box"><div class="child"></div></li>
+      <li class="box"><div class="child"></div></li>
+    </ul>
+  </div>
+  
+  <div style="float:right;width:250px;">
+  <div id="blue" style="width:200px;height:200px;background:blue"></div>
+  </div>
+  
+  <div style="clear:both"></div>
+  
+
+
+
+	<script src="libs/jquery/jquery.js" type="text/javascript" charset="utf-8"></script>
+
+  <script src="src/fixto.js" type="text/javascript" charset="utf-8"></script>
+  
+
+  
+  <script>
+    $('#child').fixTo('#father');
+    $('#list .child').fixTo('#list>li');
+    $('#list2 .child').fixTo('#list2>li');
+    $('#blue').fixTo('body');
+    $('#pinky').fixTo('body')
+  </script>  
+  
+</body>
+</html>

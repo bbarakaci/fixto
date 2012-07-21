@@ -1,0 +1,22 @@
+<!-- 
+This is a bookmarklet to use for development. 
+Lets you try the plugin on any website.
+It simply inserts the necessary js files to the document.
+Then i apply fixto to the document using a javascript console.
+You will have to change the base variable to use it.
+ -->
+<a href="javascript:
+(function(){
+    
+    var base = 'http://localhost/bb/fixto/';
+    
+    function insertToHead(source){
+        var script=document.createElement('script');
+        script.setAttribute('type','text/javascript');
+        script.setAttribute('src', base + source + '?' + Math.random());
+        document.body.appendChild(script);
+    }
+    insertToHead('libs/jquery/jquery.js');
+    insertToHead('dist/fixto.js');
+})()
+">fixTo</a>
