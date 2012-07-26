@@ -1,6 +1,8 @@
 # fixto
 
-Fix containers to viewport according to an ancestor.
+Fix containers to viewport according to an ancestor. See the [demo page][demo] to see it in action.
+
+[demo]: http://bbarakaci.github.com/fixto
 
 ## Getting Started
 Download the [production version][min] or the [development version][max].
