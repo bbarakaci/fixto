@@ -1,0 +1,266 @@
+<!doctype html>
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title></title>
+  <meta name="description" content="">
+
+  <meta name="viewport" content="width=device-width">
+  <link rel="stylesheet" href="css/style.css">
+
+  <style>
+  body {
+    background: rgb(235,241,246); /* Old browsers */
+    background: -moz-linear-gradient(top, rgba(235,241,246,1) 0%, rgba(171,211,238,1) 50%, rgba(137,195,235,1) 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(235,241,246,1)), color-stop(50%,rgba(171,211,238,1)), color-stop(100%,rgba(137,195,235,1))); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top, rgba(235,241,246,1) 0%,rgba(171,211,238,1) 50%,rgba(137,195,235,1) 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top, rgba(235,241,246,1) 0%,rgba(171,211,238,1) 50%,rgba(137,195,235,1) 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top, rgba(235,241,246,1) 0%,rgba(171,211,238,1) 50%,rgba(137,195,235,1) 100%); /* IE10+ */
+    background: linear-gradient(to bottom, rgba(235,241,246,1) 0%,rgba(171,211,238,1) 50%,rgba(137,195,235,1) 100%); /* W3C */
+    color: #999;
+    font-family: "Calibri", "Trebuchet MS", Helvetica, Verdana, sans-serif;
+  }
+  p {
+    margin: 0 0 1em 0;
+  }
+  ul {
+    padding: 0;
+  }
+  li {
+    display: block;
+    margin: 0;
+  }
+  a, a:visited, a:focus {
+    color: #9cf;
+    text-decoration: none;
+  }
+  a:hover {
+    color: #3cf;
+  }
+  #main {
+    margin: 0 auto;
+    max-width: 900px;
+    overflow: hidden;
+  }
+  header {
+    border-bottom: 1px solid #333;
+    text-align: center;
+  }
+  #content {
+    background: #fff;
+    float: left;
+    margin: 0;
+    padding: 0;
+    width: 70%;
+  }
+  #content li {
+    padding: 10px 30px;
+    border-bottom: 1px solid #999;
+    overflow: hidden;
+  }
+  #content section {
+    float: left;
+    margin: 20px 0;
+    width: 70%;
+  }
+  #content aside li {
+    border: none;
+  }
+  #content aside {
+    float: left;
+    margin-right: 10px;
+    width: 25%;
+  }
+  .bar {
+    background: #333; /* Old browsers */
+    background: -moz-linear-gradient(top, #4c4c4c 0%, #595959 12%, #666666 25%, #474747 39%, #2c2c2c 50%, #111111 60%, #000000 76%, #2b2b2b 91%, #131313 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#4c4c4c), color-stop(12%,#595959), color-stop(25%,#666666), color-stop(39%,#474747), color-stop(50%,#2c2c2c), color-stop(60%,#111111), color-stop(76%,#000000), color-stop(91%,#2b2b2b), color-stop(100%,#131313)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top, #4c4c4c 0%,#595959 12%,#666666 25%,#474747 39%,#2c2c2c 50%,#111111 60%,#000000 76%,#2b2b2b 91%,#131313 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top, #4c4c4c 0%,#595959 12%,#666666 25%,#474747 39%,#2c2c2c 50%,#111111 60%,#000000 76%,#2b2b2b 91%,#131313 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top, #4c4c4c 0%,#595959 12%,#666666 25%,#474747 39%,#2c2c2c 50%,#111111 60%,#000000 76%,#2b2b2b 91%,#131313 100%); /* IE10+ */
+    background: linear-gradient(to bottom, #4c4c4c 0%,#595959 12%,#666666 25%,#474747 39%,#2c2c2c 50%,#111111 60%,#000000 76%,#2b2b2b 91%,#131313 100%); /* W3C */
+    padding: 10px 0;
+    text-align: center;
+  }
+  nav {   
+    float: right;
+    width: 30%;
+  }
+  nav ul {
+    background: #333;
+    padding: 30px;    
+  }
+  code {
+    font-size: 11px;
+  }
+  @media only screen and (max-width: 480px), only screen and (max-device-width: 480px) {
+    #content,
+    #content section,
+    #content aside,
+    nav {
+      float: none;
+    }
+    #content,
+    #content section,
+    #content aside,
+    nav {
+      width: 100%;
+    }
+    nav ul {
+      margin: 0 auto;
+      padding: 0;
+      overflow: hidden;
+    }
+    nav li {
+      border-right: 1px solid #9cf;
+      float: left;
+      padding: 0 10px;
+    }
+    nav li:last-child {
+      border-right: 0;
+    }
+  }
+  </style>
+
+  <script src="js/libs/modernizr-2.5.3.min.js"></script>
+</head>
+<body>
+  <!--[if lt IE 7]><p class=chromeframe>Your browser is <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p><![endif]-->
+  <header>
+    <h1>FixTo</h1>
+    <h2>Fix containers to viewport according to an ancestor</h2>
+  </header>
+  <article id="main" role="main">
+    <nav>
+      <ul id="menu">
+        <li><a href="#section1">Lorem</a></li>
+        <li><a href="#section2">Ipsum</a></li>
+        <li><a href="#section3">Dolor</a></li>
+        <li><a href="#section4">Sit</a></li>
+        <li><a href="#section5">Amet</a></li>
+      </ul>
+    </nav>
+    <ul id="content">
+      <li id="section1" class="section-row">
+        <aside>
+            <div class="sticky">
+                <h3>Lorem</h3>
+                <!-- AddThis Button BEGIN -->
+                  <div class="addthis_toolbox addthis_32x32_style">
+                  <a class="addthis_button_facebook"></a>
+                  <a class="addthis_button_twitter"></a>
+                  <a class="addthis_button_google_plusone_badge"></a>
+                  <a class="addthis_button_tumblr"></a>
+                  <a class="addthis_button_compact"></a>
+                  </div>
+                  <!-- AddThis Button END -->                
+            </div>
+          
+        </aside>
+        <section>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. In vitae lacus lacus, sit amet vulputate tortor. Nam gravida dignissim feugiat. Mauris mattis cursus molestie. Ut tincidunt sapien id orci ornare vulputate. Phasellus scelerisque adipiscing euismod. Etiam euismod vulputate est, et fermentum nulla porta quis. Aenean id eros odio. Sed vehicula lorem dui. Proin in nunc purus, id rutrum ipsum. Nam tortor ante, ultricies nec egestas sed, laoreet eu libero.</p>
+            <p>Quisque quis turpis at mi venenatis varius et at mauris. Cras placerat felis a lacus viverra tempor. Vivamus et justo tellus. Cras consectetur mollis cursus. Integer vitae nibh sit amet tortor mattis aliquet. In elit turpis, dictum sit amet lobortis eget, pharetra ut erat. Donec commodo, ipsum ut vehicula gravida, est sem aliquet ante, vel rhoncus mi mi id sem. Cras mattis nisi id ante pretium tempus. Aenean non sem sit amet justo consequat malesuada. Integer eget iaculis sem. Curabitur condimentum massa at mi vestibulum ultrices. Donec sed sapien sit amet nunc cursus pharetra a sit amet augue. Sed eget metus at justo faucibus egestas sit amet at augue. Fusce ac leo magna, et placerat nibh.</p>
+
+        </section>
+      </li>
+      <li id="section2">
+        <aside>
+          <h3>Ipsum</h3>
+          <!-- AddThis Button BEGIN -->
+            <div class="addthis_toolbox addthis_32x32_style">
+            <a class="addthis_button_facebook"></a>
+            <a class="addthis_button_twitter"></a>
+            <a class="addthis_button_google_plusone_badge"></a>
+            <a class="addthis_button_tumblr"></a>
+            <a class="addthis_button_compact"></a>
+            </div>
+            <!-- AddThis Button END -->
+        </aside>
+        <section>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. In vitae lacus lacus, sit amet vulputate tortor. Nam gravida dignissim feugiat. Mauris mattis cursus molestie. Ut tincidunt sapien id orci ornare vulputate. Phasellus scelerisque adipiscing euismod. Etiam euismod vulputate est, et fermentum nulla porta quis. Aenean id eros odio. Sed vehicula lorem dui. Proin in nunc purus, id rutrum ipsum. Nam tortor ante, ultricies nec egestas sed, laoreet eu libero.</p>
+            <p>Quisque quis turpis at mi venenatis varius et at mauris. Cras placerat felis a lacus viverra tempor. Vivamus et justo tellus. Cras consectetur mollis cursus. Integer vitae nibh sit amet tortor mattis aliquet. In elit turpis, dictum sit amet lobortis eget, pharetra ut erat. Donec commodo, ipsum ut vehicula gravida, est sem aliquet ante, vel rhoncus mi mi id sem. Cras mattis nisi id ante pretium tempus. Aenean non sem sit amet justo consequat malesuada. Integer eget iaculis sem. Curabitur condimentum massa at mi vestibulum ultrices. Donec sed sapien sit amet nunc cursus pharetra a sit amet augue. Sed eget metus at justo faucibus egestas sit amet at augue. Fusce ac leo magna, et placerat nibh.</p>
+        </section>
+      </li>
+      <li id="section3">
+        <aside>
+          <h3>Dolor</h3>
+          <!-- AddThis Button BEGIN -->
+            <div class="addthis_toolbox addthis_32x32_style">
+            <a class="addthis_button_facebook"></a>
+            <a class="addthis_button_twitter"></a>
+            <a class="addthis_button_google_plusone_badge"></a>
+            <a class="addthis_button_tumblr"></a>
+            <a class="addthis_button_compact"></a>
+            </div>
+            <!-- AddThis Button END -->
+        </aside>
+        <section>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. In vitae lacus lacus, sit amet vulputate tortor. Nam gravida dignissim feugiat. Mauris mattis cursus molestie. Ut tincidunt sapien id orci ornare vulputate. Phasellus scelerisque adipiscing euismod. Etiam euismod vulputate est, et fermentum nulla porta quis. Aenean id eros odio. Sed vehicula lorem dui. Proin in nunc purus, id rutrum ipsum. Nam tortor ante, ultricies nec egestas sed, laoreet eu libero.</p>
+            <p>Quisque quis turpis at mi venenatis varius et at mauris. Cras placerat felis a lacus viverra tempor. Vivamus et justo tellus. Cras consectetur mollis cursus. Integer vitae nibh sit amet tortor mattis aliquet. In elit turpis, dictum sit amet lobortis eget, pharetra ut erat. Donec commodo, ipsum ut vehicula gravida, est sem aliquet ante, vel rhoncus mi mi id sem. Cras mattis nisi id ante pretium tempus. Aenean non sem sit amet justo consequat malesuada. Integer eget iaculis sem. Curabitur condimentum massa at mi vestibulum ultrices. Donec sed sapien sit amet nunc cursus pharetra a sit amet augue. Sed eget metus at justo faucibus egestas sit amet at augue. Fusce ac leo magna, et placerat nibh.</p>
+        </section>
+      </li>
+      <li id="section4">
+        <aside>
+          <h3>Sit</h3>
+          <!-- AddThis Button BEGIN -->
+            <div class="addthis_toolbox addthis_32x32_style">
+            <a class="addthis_button_facebook"></a>
+            <a class="addthis_button_twitter"></a>
+            <a class="addthis_button_google_plusone_badge"></a>
+            <a class="addthis_button_tumblr"></a>
+            <a class="addthis_button_compact"></a>
+            </div>
+            <!-- AddThis Button END -->
+        </aside>
+        <section>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. In vitae lacus lacus, sit amet vulputate tortor. Nam gravida dignissim feugiat. Mauris mattis cursus molestie. Ut tincidunt sapien id orci ornare vulputate. Phasellus scelerisque adipiscing euismod. Etiam euismod vulputate est, et fermentum nulla porta quis. Aenean id eros odio. Sed vehicula lorem dui. Proin in nunc purus, id rutrum ipsum. Nam tortor ante, ultricies nec egestas sed, laoreet eu libero.</p>
+            <p>Quisque quis turpis at mi venenatis varius et at mauris. Cras placerat felis a lacus viverra tempor. Vivamus et justo tellus. Cras consectetur mollis cursus. Integer vitae nibh sit amet tortor mattis aliquet. In elit turpis, dictum sit amet lobortis eget, pharetra ut erat. Donec commodo, ipsum ut vehicula gravida, est sem aliquet ante, vel rhoncus mi mi id sem. Cras mattis nisi id ante pretium tempus. Aenean non sem sit amet justo consequat malesuada. Integer eget iaculis sem. Curabitur condimentum massa at mi vestibulum ultrices. Donec sed sapien sit amet nunc cursus pharetra a sit amet augue. Sed eget metus at justo faucibus egestas sit amet at augue. Fusce ac leo magna, et placerat nibh.</p>
+        </section>
+      </li>
+      <li id="section5">
+        <aside>
+          <h3>Amet</h3>
+          <!-- AddThis Button BEGIN -->
+            <div class="addthis_toolbox addthis_32x32_style">
+            <a class="addthis_button_facebook"></a>
+            <a class="addthis_button_twitter"></a>
+            <a class="addthis_button_google_plusone_badge"></a>
+            <a class="addthis_button_tumblr"></a>
+            <a class="addthis_button_compact"></a>
+            </div>
+            <!-- AddThis Button END -->
+        </aside>
+        <section>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. In vitae lacus lacus, sit amet vulputate tortor. Nam gravida dignissim feugiat. Mauris mattis cursus molestie. Ut tincidunt sapien id orci ornare vulputate. Phasellus scelerisque adipiscing euismod. Etiam euismod vulputate est, et fermentum nulla porta quis. Aenean id eros odio. Sed vehicula lorem dui. Proin in nunc purus, id rutrum ipsum. Nam tortor ante, ultricies nec egestas sed, laoreet eu libero.</p>
+          <p>Quisque quis turpis at mi venenatis varius et at mauris. Cras placerat felis a lacus viverra tempor. Vivamus et justo tellus. Cras consectetur mollis cursus. Integer vitae nibh sit amet tortor mattis aliquet. In elit turpis, dictum sit amet lobortis eget, pharetra ut erat. Donec commodo, ipsum ut vehicula gravida, est sem aliquet ante, vel rhoncus mi mi id sem. Cras mattis nisi id ante pretium tempus. Aenean non sem sit amet justo consequat malesuada. Integer eget iaculis sem. Curabitur condimentum massa at mi vestibulum ultrices. Donec sed sapien sit amet nunc cursus pharetra a sit amet augue. Sed eget metus at justo faucibus egestas sit amet at augue. Fusce ac leo magna, et placerat nibh.</p>
+        </section>
+      </li>
+    </ul>
+  </article>
+
+  <footer class="bar">
+      
+  </footer>
+
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+  <script>window.jQuery || document.write('<script src="libs/jquery/jquery.js"><\/script>')</script>
+<script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid=xa-5002e1366084f15f"></script>
+  <script src="src/fixto.js"></script>
+
+  <!-- <link rel="stylesheet" href="http://yandex.st/highlightjs/7.0/styles/monokai.min.css">
+  <script src="http://yandex.st/highlightjs/7.0/highlight.min.js"></script> -->
+
+  <script>
+    //hljs.initHighlightingOnLoad();
+    $('#menu').fixTo('body');
+    $('.sticky').fixTo('.section-row');
+    
+    
+  </script>
+</body>
+</html>
