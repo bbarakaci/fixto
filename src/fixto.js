@@ -88,6 +88,7 @@ var fixto = (function ($, window, document) {
     function FixToContainer(child, parent, options) {
         
         this.child = child;
+        this._$child = $(child);
         this.parent = parent;
         this._replacer = new mimicNode.MimicNode(child);
         this._ghostNode = this._replacer.replacer;
@@ -140,43 +141,45 @@ var fixto = (function ($, window, document) {
             return offset;
         },
         _fix: function _fix() {
-            var child = this.child;
+            var child = this.child,
+                childStyle = child.style;
             this._saveStyles();
             
             if(document.documentElement.currentStyle){
                 var styles = computedStyle.getAll(child);
                 // Function for ie<9. when hasLayout is not triggered in ie7, he will report currentStyle as auto, clientWidth as 0. Thus using offsetWidth.
-                child.style.left = (this._fullOffset('offsetLeft', child) - computedStyle.getFloat(child, 'marginLeft')) + 'px';
-                child.style.width = (child.offsetWidth) - (computedStyle.toFloat(styles['paddingLeft']) + computedStyle.toFloat(styles['paddingRight']) + computedStyle.toFloat(styles['borderLeftWidth']) + computedStyle.toFloat(styles['borderRightWidth'])) + 'px';
+                childStyle.left = (this._fullOffset('offsetLeft', child) - computedStyle.getFloat(child, 'marginLeft')) + 'px';
+                childStyle.width = (child.offsetWidth) - (computedStyle.toFloat(styles['paddingLeft']) + computedStyle.toFloat(styles['paddingRight']) + computedStyle.toFloat(styles['borderLeftWidth']) + computedStyle.toFloat(styles['borderRightWidth'])) + 'px';
             }
             else {
-                child.style.width = computedStyle.get(child, 'width');
-                child.style.left = (child.getBoundingClientRect()['left'] - computedStyle.getFloat(child, 'marginLeft')) + 'px';
+                childStyle.width = computedStyle.get(child, 'width');
+                childStyle.left = (child.getBoundingClientRect()['left'] - computedStyle.getFloat(child, 'marginLeft')) + 'px';
             }
             
             this._replacer.replace();
-            child.style.position = 'fixed';
-            child.style.top = '0px';
+            childStyle.position = 'fixed';
+            childStyle.top = '0px';
             
-            $(child).addClass(this.options.className);
+            this._$child.addClass(this.options.className);
             this.fixed = true;
             this._adjust(this._parentBottom, this._scrollTop);
         },
         _unfix: function _unfix() {
+            var childStyle = this.child.style;
             this._replacer.hide();
-            this.child.style.position = this._childOriginalPosition;
-            this.child.style.top = this._childOriginalTop;
-            this.child.style.width = this._childOriginalWidth;
-            this.child.style.left = this._childOriginalLeft;
-            $(this.child).removeClass(this.options.className);
+            childStyle.position = this._childOriginalPosition;
+            childStyle.top = this._childOriginalTop;
+            childStyle.width = this._childOriginalWidth;
+            childStyle.left = this._childOriginalLeft;
+            this._$child.removeClass(this.options.className);
             this.fixed = false;
         },
         _saveStyles: function(){
-            var child = this.child;
-            this._childOriginalPosition = child.style.position;
-            this._childOriginalTop = child.style.top;
-            this._childOriginalWidth = child.style.width;
-            this._childOriginalLeft = child.style.left;
+            var childStyle = this.child.style;
+            this._childOriginalPosition = childStyle.position;
+            this._childOriginalTop = childStyle.top;
+            this._childOriginalWidth = childStyle.width;
+            this._childOriginalLeft = childStyle.left;
         },
         _onresize: function () {
             this._unfix();
