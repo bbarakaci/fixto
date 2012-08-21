@@ -1,16 +1,44 @@
-/*! fixto - v0.1.1 - 2012-07-26
+/*! fixto - v0.1.2 - 2012-08-21
 * http://github.com/bbarakaci/fixto/
 * Author: Burak Barakaci */
 
 
 var fixto = (function ($, window, document) {
 
+	// Start Computed Style. Please do not modify this module here. Modify it from its own repo. See address below.
+	
     /*! Computed Style - v0.1.0 - 2012-07-19
     * https://github.com/bbarakaci/computed-style
     * Copyright (c) 2012 Burak Barakaci; Licensed MIT */
-    var computedStyle=function(){var a={getAll:function(a){return document.defaultView.getComputedStyle(a)},_getAllCurrentStyle:function(a){return a.currentStyle},get:function(a,b){return this.getAll(a)[b]},toFloat:function(a){return parseFloat(a,10)||0},getFloat:function(a,b){return this.toFloat(this.get(a,b))},width:function(a){return this.getFloat(a,"width")},_widthCurrentStyle:function(a){var b=this.getAll(a);return a.offsetWidth-(this.toFloat(b.paddingLeft)+this.toFloat(b.paddingRight)+this.toFloat(b.borderLeftWidth)+this.toFloat(b.borderRightWidth))}};return document.documentElement.currentStyle&&(a.getAll=a._getAllCurrentStyle,a.width=a._widthCurrentStyle),a}();
+    var computedStyle = (function() {
+        var computedStyle = {
+            getAll : function(element){
+                return document.defaultView.getComputedStyle(element);
+            },
+            get : function(element, name){
+                return this.getAll(element)[name];
+            },
+            toFloat : function(value){
+                return parseFloat(value, 10) || 0;
+            },
+            getFloat : function(element,name){
+                return this.toFloat(this.get(element, name));
+            },
+            _getAllCurrentStyle : function(element) {
+                return element.currentStyle;
+            }
+        };
 
-    
+        if (document.documentElement.currentStyle) {
+            computedStyle.getAll = computedStyle._getAllCurrentStyle;
+        }
+
+        return computedStyle;
+
+    }());
+
+	// End Computed Style. Modify whatever you want to.
+
     var mimicNode = (function(){
         /*
         Class Mimic Node
@@ -33,47 +61,52 @@ var fixto = (function ($, window, document) {
 
                  // rst.width = computedStyle.width(this.element) + 'px';
                  // rst.height = this.element.offsetHeight + 'px';
-                 
+
                  // Setting offsetWidth
                  rst.width = this._width();
                  rst.height = this._height();
-                 
+
                  // Adobt margins
-                 rst.marginTop = styles['marginTop'];
-                 rst.marginBottom = styles['marginBottom'];
-                 rst.marginLeft = styles['marginLeft'];
-                 rst.marginRight = styles['marginRight'];
-                 
+                 rst.marginTop = styles.marginTop;
+                 rst.marginBottom = styles.marginBottom;
+                 rst.marginLeft = styles.marginLeft;
+                 rst.marginRight = styles.marginRight;
+
                  // Adopt positioning
-                 rst.cssFloat = styles['cssFloat'];
-                 rst.styleFloat = styles['styleFloat']; //ie8;
-                 rst.position = styles['position'];
-                 rst.top = styles['top'];
-                 rst.right = styles['right'];
-                 rst.bottom = styles['bottom'];
-                 rst.left = styles['left'];
-                 // rst.borderStyle = styles['borderStyle'];
-                 
-                 rst.display = styles['display'];
-                                 
+                 rst.cssFloat = styles.cssFloat;
+                 rst.styleFloat = styles.styleFloat; //ie8;
+                 rst.position = styles.position;
+                 rst.top = styles.top;
+                 rst.right = styles.right;
+                 rst.bottom = styles.bottom;
+                 rst.left = styles.left;
+                 // rst.borderStyle = styles.borderStyle;
+
+                 rst.display = styles.display;
+
             },
+
             hide: function () {
                 this.replacer.style.display = 'none';
             },
+
             _width : function(){
-                return this.element.getBoundingClientRect()['width'] + 'px';
+                return this.element.getBoundingClientRect().width + 'px';
             },
+
             _widthOffset : function(){
                 return this.element.offsetWidth + 'px';
             },
+
             _height : function(){
-                return this.element.getBoundingClientRect()['height'] + 'px';
+                return this.element.getBoundingClientRect().height + 'px';
             },
+
             _heightOffset : function(){
                 return this.element.offsetHeight + 'px';
             }
         };
-        
+
         var bcr = document.documentElement.getBoundingClientRect();
         if(!bcr.width){
             MimicNode.prototype._width = MimicNode.prototype._widthOffset;
@@ -85,29 +118,29 @@ var fixto = (function ($, window, document) {
             computedStyle:computedStyle
         };
     }());
-    
-        
+
+
     // Class FixToContainer
 
     function FixToContainer(child, parent, options) {
-        
         this.child = child;
         this._$child = $(child);
         this.parent = parent;
         this._replacer = new mimicNode.MimicNode(child);
         this._ghostNode = this._replacer.replacer;
-        this.options = $.extend(this.options, options);
+        this.options = $.extend({
+            className: 'fixto-fixed'
+        }, options);
         $(window).scroll($.proxy(this._onscroll, this));
         $(this._toresize).bind('resize', $.proxy(this._onresize, this));
         this._saveStyles();
     }
 
     FixToContainer.prototype = {
-        options: {
-            className: 'fixto-fixed'
-        },
+	
         // at ie8 maybe only in vm window resize event fires everytime an element is resized.
-        _toresize : $.browser.msie && $.browser.version == '8.0' ? document.documentElement : window,
+        _toresize : $.browser.msie && $.browser.version === '8.0' ? document.documentElement : window,
+
         _onscroll: function _onscroll() {
             this._scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
             this._parentBottom = (this.parent.offsetHeight + this._fullOffset('offsetTop', this.parent)) - computedStyle.getFloat(this.parent, 'paddingBottom');
@@ -123,6 +156,7 @@ var fixto = (function ($, window, document) {
                 this._adjust();
             }
         },
+
         _adjust: function _adjust() {
             var diff = (this._parentBottom - this._scrollTop) - (this.child.offsetHeight + computedStyle.getFloat(this.child, 'marginTop') + computedStyle.getFloat(this.child, 'marginBottom'));
             if (diff < 0) {
@@ -131,7 +165,7 @@ var fixto = (function ($, window, document) {
         },
 
         /*
-        I need some performance on calculating offset as it is called a lot of times. 
+        I need some performance on calculating offset as it is called a lot of times.
         This function calculates cumulative offsetTop way faster than jQuery $.offset
         todo: check vs getBoundingClientRect
         */
@@ -144,30 +178,32 @@ var fixto = (function ($, window, document) {
             }
             return offset;
         },
+
         _fix: function _fix() {
             var child = this.child,
                 childStyle = child.style;
             this._saveStyles();
-            
+
             if(document.documentElement.currentStyle){
                 var styles = computedStyle.getAll(child);
                 // Function for ie<9. when hasLayout is not triggered in ie7, he will report currentStyle as auto, clientWidth as 0. Thus using offsetWidth.
                 childStyle.left = (this._fullOffset('offsetLeft', child) - computedStyle.getFloat(child, 'marginLeft')) + 'px';
-                childStyle.width = (child.offsetWidth) - (computedStyle.toFloat(styles['paddingLeft']) + computedStyle.toFloat(styles['paddingRight']) + computedStyle.toFloat(styles['borderLeftWidth']) + computedStyle.toFloat(styles['borderRightWidth'])) + 'px';
+                childStyle.width = (child.offsetWidth) - (computedStyle.toFloat(styles.paddingLeft) + computedStyle.toFloat(styles.paddingRight) + computedStyle.toFloat(styles.borderLeftWidth) + computedStyle.toFloat(styles.borderRightWidth)) + 'px';
             }
             else {
                 childStyle.width = computedStyle.get(child, 'width');
-                childStyle.left = (child.getBoundingClientRect()['left'] - computedStyle.getFloat(child, 'marginLeft')) + 'px';
+                childStyle.left = (child.getBoundingClientRect().left - computedStyle.getFloat(child, 'marginLeft')) + 'px';
             }
-            
+
             this._replacer.replace();
             childStyle.position = 'fixed';
             childStyle.top = '0px';
-            
+
             this._$child.addClass(this.options.className);
             this.fixed = true;
             this._adjust(this._parentBottom, this._scrollTop);
         },
+
         _unfix: function _unfix() {
             var childStyle = this.child.style;
             this._replacer.hide();
@@ -178,6 +214,7 @@ var fixto = (function ($, window, document) {
             this._$child.removeClass(this.options.className);
             this.fixed = false;
         },
+
         _saveStyles: function(){
             var childStyle = this.child.style;
             this._childOriginalPosition = childStyle.position;
@@ -185,6 +222,7 @@ var fixto = (function ($, window, document) {
             this._childOriginalWidth = childStyle.width;
             this._childOriginalLeft = childStyle.left;
         },
+
         _onresize: function () {
             this._unfix();
             this._onscroll();
@@ -194,17 +232,13 @@ var fixto = (function ($, window, document) {
     var fixTo = function fixTo(childElement, parentElement, options) {
         return new FixToContainer(childElement, parentElement, options);
     };
-    
-    
-    
-    
-    
+
     /*
     No support for touch devices and ie lt 8
     */
     var touch = !!('ontouchstart' in window);
     var ielt8 = $.browser.msie && $.browser.version < 8;
-    
+
     if(touch || ielt8){
         fixTo = function(){
             return 'not supported';
@@ -219,11 +253,11 @@ var fixto = (function ($, window, document) {
             fixTo(childs[i], targets[i], options);
         }
     };
-    
+
     /*
-        Expose 
+        Expose
     */
-    
+
     return {
         FixToContainer: FixToContainer,
         fixTo: fixTo,
