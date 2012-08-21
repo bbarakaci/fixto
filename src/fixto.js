@@ -81,18 +81,23 @@ var fixto = (function ($, window, document) {
                  rst.display = styles.display;
 
             },
+
             hide: function () {
                 this.replacer.style.display = 'none';
             },
+
             _width : function(){
                 return this.element.getBoundingClientRect().width + 'px';
             },
+
             _widthOffset : function(){
                 return this.element.offsetWidth + 'px';
             },
+
             _height : function(){
                 return this.element.getBoundingClientRect().height + 'px';
             },
+
             _heightOffset : function(){
                 return this.element.offsetHeight + 'px';
             }
@@ -114,7 +119,6 @@ var fixto = (function ($, window, document) {
     // Class FixToContainer
 
     function FixToContainer(child, parent, options) {
-
         this.child = child;
         this._$child = $(child);
         this.parent = parent;
@@ -129,8 +133,10 @@ var fixto = (function ($, window, document) {
     }
 
     FixToContainer.prototype = {
+	
         // at ie8 maybe only in vm window resize event fires everytime an element is resized.
         _toresize : $.browser.msie && $.browser.version === '8.0' ? document.documentElement : window,
+
         _onscroll: function _onscroll() {
             this._scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
             this._parentBottom = (this.parent.offsetHeight + this._fullOffset('offsetTop', this.parent)) - computedStyle.getFloat(this.parent, 'paddingBottom');
@@ -146,6 +152,7 @@ var fixto = (function ($, window, document) {
                 this._adjust();
             }
         },
+
         _adjust: function _adjust() {
             var diff = (this._parentBottom - this._scrollTop) - (this.child.offsetHeight + computedStyle.getFloat(this.child, 'marginTop') + computedStyle.getFloat(this.child, 'marginBottom'));
             if (diff < 0) {
@@ -167,6 +174,7 @@ var fixto = (function ($, window, document) {
             }
             return offset;
         },
+
         _fix: function _fix() {
             var child = this.child,
                 childStyle = child.style;
@@ -191,6 +199,7 @@ var fixto = (function ($, window, document) {
             this.fixed = true;
             this._adjust(this._parentBottom, this._scrollTop);
         },
+
         _unfix: function _unfix() {
             var childStyle = this.child.style;
             this._replacer.hide();
@@ -201,6 +210,7 @@ var fixto = (function ($, window, document) {
             this._$child.removeClass(this.options.className);
             this.fixed = false;
         },
+
         _saveStyles: function(){
             var childStyle = this.child.style;
             this._childOriginalPosition = childStyle.position;
@@ -208,6 +218,7 @@ var fixto = (function ($, window, document) {
             this._childOriginalWidth = childStyle.width;
             this._childOriginalLeft = childStyle.left;
         },
+
         _onresize: function () {
             this._unfix();
             this._onscroll();
@@ -217,10 +228,6 @@ var fixto = (function ($, window, document) {
     var fixTo = function fixTo(childElement, parentElement, options) {
         return new FixToContainer(childElement, parentElement, options);
     };
-
-
-
-
 
     /*
     No support for touch devices and ie lt 8
