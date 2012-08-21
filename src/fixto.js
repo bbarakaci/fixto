@@ -120,16 +120,15 @@ var fixto = (function ($, window, document) {
         this.parent = parent;
         this._replacer = new mimicNode.MimicNode(child);
         this._ghostNode = this._replacer.replacer;
-        this.options = $.extend(this.options, options);
+        this.options = $.extend({
+            className: 'fixto-fixed'
+        }, options);
         $(window).scroll($.proxy(this._onscroll, this));
         $(this._toresize).bind('resize', $.proxy(this._onresize, this));
         this._saveStyles();
     }
 
     FixToContainer.prototype = {
-        options: {
-            className: 'fixto-fixed'
-        },
         // at ie8 maybe only in vm window resize event fires everytime an element is resized.
         _toresize : $.browser.msie && $.browser.version === '8.0' ? document.documentElement : window,
         _onscroll: function _onscroll() {
