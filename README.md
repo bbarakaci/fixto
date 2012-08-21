@@ -1,6 +1,6 @@
 # fixto
 
-Fix containers to viewport according to an ancestor. See the [demo page][demo] to see it in action.
+Fix containers to viewport relative to an ancestor. See the [demo page][demo] to see it in action.
 
 [demo]: http://bbarakaci.github.com/fixto
 
@@ -51,4 +51,4 @@ Modern browsers, >= ie8 are supported. Touch devices are not supported.
 ## Known issues
 
 - Doesn't work on elements having `margin:auto`. You will need an additional wrapper around the contents of the element. This bug is due to the fact that webkit differs from other browsers about reporting the computed margin values.
-- It is not possible to have a full width fixed header with other sticky items in the same page as fixto fixes the elements according to the viewport. It is planned to add support for this case.
+- It is not possible to have a full width fixed header with other sticky items in the same page as fixto fixes the elements to the viewport. It is planned to add support for this case.
