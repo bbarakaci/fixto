@@ -1,6 +1,8 @@
 
 var fixto = (function ($, window, document) {
 
+	// Start Computed Style. Please do not modify this module here. Modify it from its own repo. See address below.
+	
     /*! Computed Style - v0.1.0 - 2012-07-19
     * https://github.com/bbarakaci/computed-style
     * Copyright (c) 2012 Burak Barakaci; Licensed MIT */
@@ -30,6 +32,8 @@ var fixto = (function ($, window, document) {
         return computedStyle;
 
     }());
+
+	// End Computed Style. Modify whatever you want to.
 
     var mimicNode = (function(){
         /*
