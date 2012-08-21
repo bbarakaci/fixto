@@ -127,7 +127,7 @@ var fixto = (function ($, window, document) {
             className: 'fixto-fixed'
         },
         // at ie8 maybe only in vm window resize event fires everytime an element is resized.
-        _toresize : $.browser.msie && $.browser.version == '8.0' ? document.documentElement : window,
+        _toresize : $.browser.msie && $.browser.version === '8.0' ? document.documentElement : window,
         _onscroll: function _onscroll() {
             this._scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
             this._parentBottom = (this.parent.offsetHeight + this._fullOffset('offsetTop', this.parent)) - computedStyle.getFloat(this.parent, 'paddingBottom');
