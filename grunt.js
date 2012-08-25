@@ -4,11 +4,11 @@ module.exports = function(grunt) {
   // Project configuration.
   grunt.initConfig({
     meta: {
-      version: '0.1.2',
+      version: '0.1.3',
       banner: '/*! fixto - v<%= meta.version %> - ' +
         '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
-        '* http://github.com/bbarakaci/fixto/\n' +
-        '* Author: Burak Barakaci */'
+        '* http://github.com/bbarakaci/fixto/' +
+        '*/'
     },
     lint: {
       files: ['grunt.js', 'src/**/*.js', 'test/**/*.js']
@@ -52,6 +52,7 @@ module.exports = function(grunt) {
   });
 
   // Default task.
-  grunt.registerTask('default', 'qunit concat min');
+  grunt.registerTask('default', 'lint qunit');
+  grunt.registerTask('prepare', 'lint qunit concat min');
 
 };

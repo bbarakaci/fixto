@@ -45,13 +45,17 @@
     setup: function() {
         this.child = $('#child')[0];
         this.parent = $('#parent')[0];
-        this.instance = new window.fixto.FixToContainer(this.child, this.parent, {className:'coolclass'});
+        this.instance = new window.fixto.FixToContainer(this.child, this.parent, {className:'coolclass', zIndex:5, mind:"#mindy"});
     }
   });
   
   test('options', function() {
     var instance = this.instance;
     equal(instance.options.className, 'coolclass', 'classname option passed');
+    equal(instance.options.zIndex, 5, 'zIndex option passed');
+    equal(instance.child.style.zIndex, "5", 'child has correct zIndex');
+    equal(instance.options.mind, '#mindy', 'mind option passed');
+    ok(instance._$mind.jquery, '_$mind is a jquery object');
   });
   
   module('functions', {
@@ -66,7 +70,7 @@
     var instance = this.instance;
     instance._onscroll();
     equal(instance._scrollTop, 0, 'scrolltop set');
-    equal(instance._parentBottom, -10000,'paddingBotom set');
+    equal(instance._parentBottom, -9975,'paddingBotom set');
     
   });
   
@@ -74,12 +78,12 @@
     var instance = this.instance;
     instance._onscroll();
     instance._adjust();
-    equal(instance.child.style.top, '-10000px');
+    equal(instance.child.style.top, '-9975px');
   });
 
   test('fulloffset', function() {
     var instance = this.instance;
-    equal(instance._fullOffset('offsetTop', this.child), -10000);
+    equal(instance._fullOffset('offsetTop', this.child), -9975);
   });
   
   test('fix unfix', function() {
@@ -94,6 +98,20 @@
     var instance = this.instance;
     instance._saveStyles();
     instance._onresize();
+  });
+  
+  module('mindtop', {
+    setup: function() {
+        this.child = $('#child')[0];
+        this.parent = $('#parent')[0];
+        this.instance = new window.fixto.FixToContainer(this.child, this.parent, {mind:'#mindy, #mindy2'});
+    }
+  });
+  
+  test('_mindtop', function() {
+    var instance = this.instance;
+    var top = instance._mindtop();
+    equal(top, 25, 'calculating mindtop properly');
   });
   
   module('expose', {

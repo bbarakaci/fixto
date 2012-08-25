@@ -127,6 +127,12 @@ var fixto = (function ($, window, document) {
         this.options = $.extend({
             className: 'fixto-fixed'
         }, options);
+        if(this.options.mind) {
+            this._$mind = $(this.options.mind);
+        }
+        if(this.options.zIndex) {
+            this.child.style.zIndex = this.options.zIndex;
+        }
         $(window).scroll($.proxy(this._onscroll, this));
         $(this._toresize).bind('resize', $.proxy(this._onresize, this));
         this._saveStyles();
@@ -136,16 +142,27 @@ var fixto = (function ($, window, document) {
 	
         // at ie8 maybe only in vm window resize event fires everytime an element is resized.
         _toresize : $.browser.msie && $.browser.version === '8.0' ? document.documentElement : window,
+        
+        // Returns the total outerHeight of the elements passed to mind option. Will return 0 if none.
+        _mindtop: function () {
+            var top = 0;
+            if(this._$mind) {
+                $(this._$mind).each(function () {
+                    top += $(this).outerHeight(true);
+                });
+            }
+            return top;
+        },
 
         _onscroll: function _onscroll() {
             this._scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
             this._parentBottom = (this.parent.offsetHeight + this._fullOffset('offsetTop', this.parent)) - computedStyle.getFloat(this.parent, 'paddingBottom');
             if (!this.fixed) {
-                if (this._scrollTop > (this._fullOffset('offsetTop', this.child) - computedStyle.getFloat(this.child, 'marginTop')) && this._scrollTop < this._parentBottom) {
+                if (this._scrollTop > (this._fullOffset('offsetTop', this.child) - computedStyle.getFloat(this.child, 'marginTop') - this._mindtop()) && this._scrollTop < this._parentBottom) {
                     this._fix();
                 }
             } else {
-                if (this._scrollTop > this._parentBottom || this._scrollTop < this._fullOffset('offsetTop', this._ghostNode) - computedStyle.getFloat(this._ghostNode, 'marginTop')) {
+                if (this._scrollTop > this._parentBottom || this._scrollTop < (this._fullOffset('offsetTop', this._ghostNode) - computedStyle.getFloat(this._ghostNode, 'marginTop') - this._mindtop())) {
                     this._unfix();
                     return;
                 }
@@ -154,9 +171,9 @@ var fixto = (function ($, window, document) {
         },
 
         _adjust: function _adjust() {
-            var diff = (this._parentBottom - this._scrollTop) - (this.child.offsetHeight + computedStyle.getFloat(this.child, 'marginTop') + computedStyle.getFloat(this.child, 'marginBottom'));
+            var diff = (this._parentBottom - this._scrollTop) - (this.child.offsetHeight + computedStyle.getFloat(this.child, 'marginTop') + computedStyle.getFloat(this.child, 'marginBottom') + this._mindtop());
             if (diff < 0) {
-                this.child.style.top = diff + 'px';
+                this.child.style.top = (diff + this._mindtop()) + 'px';
             }
         },
 
@@ -182,8 +199,8 @@ var fixto = (function ($, window, document) {
 
             if(document.documentElement.currentStyle){
                 var styles = computedStyle.getAll(child);
-                // Function for ie<9. when hasLayout is not triggered in ie7, he will report currentStyle as auto, clientWidth as 0. Thus using offsetWidth.
                 childStyle.left = (this._fullOffset('offsetLeft', child) - computedStyle.getFloat(child, 'marginLeft')) + 'px';
+                // Function for ie<9. when hasLayout is not triggered in ie7, he will report currentStyle as auto, clientWidth as 0. Thus using offsetWidth.
                 childStyle.width = (child.offsetWidth) - (computedStyle.toFloat(styles.paddingLeft) + computedStyle.toFloat(styles.paddingRight) + computedStyle.toFloat(styles.borderLeftWidth) + computedStyle.toFloat(styles.borderRightWidth)) + 'px';
             }
             else {
@@ -193,7 +210,7 @@ var fixto = (function ($, window, document) {
 
             this._replacer.replace();
             childStyle.position = 'fixed';
-            childStyle.top = '0px';
+            childStyle.top = this._mindtop() + 'px';
 
             this._$child.addClass(this.options.className);
             this.fixed = true;

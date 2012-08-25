@@ -1,8 +1,10 @@
 # fixto
 
-Fix containers to viewport relative to an ancestor. See the [demo page][demo] to see it in action.
+Fix containers to the viewport relative to an ancestor. To see it in action you can see the [demo page][demo] or development pages [development page 1][dev1], [development page 2][dev2].
 
 [demo]: http://bbarakaci.github.com/fixto
+[dev1]: http://bbarakaci.github.com/fixto/dev1.html
+[dev2]: http://bbarakaci.github.com/fixto/dev2.html
 
 ## Getting Started
 Download the [production version][min] or the [development version][max].
@@ -28,21 +30,48 @@ You can fix multiple containers to multiple ancestors. Make sure your selectors 
 
     $('.sticky').fixTo('.sticky-holder');
     
-Usage without jQuery
+Passing options
+
+    $('#left-banner').fixTo('#left-column', {
+        className : 'my-class-name',
+        zIndex: 10,
+        mind: '#header'
+    });
     
-    var sticky = fixto.fixTo(domElementToFix, domElementToBeFixed);
+Usage without jQuery. This is the only way to have a reference to the instance, as yet.
+    
+    var sticky = fixto.fixTo(domElementToFix, domElementToBeFixed, options);
 
 ## Styling
 
-When the container is fixed, it will receive the class name `fixto-fixed` . You may use this class for styling or you may pass any other class name by passing as an option.
-    
+When the container is fixed, it will receive the class name `fixto-fixed`. You may use this class or you may pass any other class name as an option.
+
+## Options
+
+### className (String)
+
+See above example.
+
+### zIndex (Number)
+
+Although you can set z-index with css, it is possible to pass a `zIndex` option. See above example.
+
+### mind (selector)
+
+When you have other fixed containers on a page, pass those containers as mind option to prevent overlapping.
+
 Example
 
-    $('.left-banner').fixTo('.left-column', {
-        className : 'my-class-name'
-    });
+    $('#header').fixTo('body');
 
-Fixto doesnt take care of z-index. Please apply z-index to the container when necessary.
+    $('#left-banner').fixTo('#left-column', {
+        mind: '#header'
+    });
+    
+Selector can be in any form that jQuery can handle. You can pass multiple elements. 
+
+## Features
+- Responsive
 
 ## Browser support
 
@@ -50,5 +79,4 @@ Modern browsers, >= ie8 are supported. Touch devices are not supported.
 
 ## Known issues
 
-- Doesn't work on elements having `margin:auto`. You will need an additional wrapper around the contents of the element. This bug is due to the fact that webkit differs from other browsers about reporting the computed margin values.
-- It is not possible to have a full width fixed header with other sticky items in the same page as fixto fixes the elements to the viewport. It is planned to add support for this case.
+- Doesn't work on elements having `margin:auto`. You will need an additional wrapper around the element. This is because webkit differs from other browsers about reporting the computed margin values.
