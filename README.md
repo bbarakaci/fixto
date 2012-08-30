@@ -1,6 +1,6 @@
 # fixto
 
-Fix containers to the viewport relative to an ancestor. To see it in action you can see the [demo page][demo] or development pages [development page 1][dev1], [development page 2][dev2].
+A jQuery plugin for sticky positioning. Fix containers to the viewport relative to an ancestor. To see it in action you can see the [demo page][demo] or development pages [development page 1][dev1], [development page 2][dev2].
 
 [demo]: http://bbarakaci.github.com/fixto
 [dev1]: http://bbarakaci.github.com/fixto/dev1.html
