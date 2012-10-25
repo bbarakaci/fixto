@@ -1,4 +1,4 @@
-/*! fixto - v0.1.3 - 2012-08-25
+/*! fixto - v0.1.4 - 2012-10-25
 * http://github.com/bbarakaci/fixto/*/
 
 
@@ -163,6 +163,7 @@ var fixto = (function ($, window, document) {
             if (!this.fixed) {
                 if (this._scrollTop > (this._fullOffset('offsetTop', this.child) - computedStyle.getFloat(this.child, 'marginTop') - this._mindtop()) && this._scrollTop < this._parentBottom) {
                     this._fix();
+                    this._adjust();
                 }
             } else {
                 if (this._scrollTop > this._parentBottom || this._scrollTop < (this._fullOffset('offsetTop', this._ghostNode) - computedStyle.getFloat(this._ghostNode, 'marginTop') - this._mindtop())) {
@@ -175,8 +176,12 @@ var fixto = (function ($, window, document) {
 
         _adjust: function _adjust() {
             var diff = (this._parentBottom - this._scrollTop) - (this.child.offsetHeight + computedStyle.getFloat(this.child, 'marginTop') + computedStyle.getFloat(this.child, 'marginBottom') + this._mindtop());
+            var mindTop = this._mindtop();
             if (diff < 0) {
-                this.child.style.top = (diff + this._mindtop()) + 'px';
+                this.child.style.top = (diff + mindTop) + 'px';
+            }
+            else {
+                this.child.style.top = (0 + mindTop) + 'px';
             }
         },
 
@@ -214,10 +219,8 @@ var fixto = (function ($, window, document) {
             this._replacer.replace();
             childStyle.position = 'fixed';
             childStyle.top = this._mindtop() + 'px';
-
             this._$child.addClass(this.options.className);
             this.fixed = true;
-            this._adjust(this._parentBottom, this._scrollTop);
         },
 
         _unfix: function _unfix() {
