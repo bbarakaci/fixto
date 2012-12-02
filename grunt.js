@@ -4,7 +4,7 @@ module.exports = function(grunt) {
   // Project configuration.
   grunt.initConfig({
     meta: {
-      version: '0.1.4',
+      version: '0.1.5',
       banner: '/*! fixto - v<%= meta.version %> - ' +
         '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
         '* http://github.com/bbarakaci/fixto/' +
@@ -53,6 +53,6 @@ module.exports = function(grunt) {
 
   // Default task.
   grunt.registerTask('default', 'lint qunit');
-  grunt.registerTask('prepare', 'lint qunit concat min');
+  grunt.registerTask('make', 'lint qunit concat min');
 
 };
