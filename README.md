@@ -109,6 +109,7 @@ jQuery:
 - Responsive
 - Handles multiple instances
 - Start, stop, destroy
+- Sensitive to viewport height
 
 ## Browser support
 
