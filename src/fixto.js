@@ -100,6 +100,17 @@ var fixto = (function ($, window, document) {
 
             _heightOffset : function(){
                 return this.element.offsetHeight + 'px';
+            },
+            
+            destroy: function () {
+                $(this.replacer).remove();
+                
+                // set properties to null to break references
+                for (var prop in this) {
+                    if (this.hasOwnProperty(prop)) {
+                      this[prop] = null;
+                    }
+                }
             }
         };
 
@@ -133,12 +144,24 @@ var fixto = (function ($, window, document) {
         if(this.options.zIndex) {
             this.child.style.zIndex = this.options.zIndex;
         }
-        $(window).scroll($.proxy(this._onscroll, this));
-        $(this._toresize).bind('resize', $.proxy(this._onresize, this));
+        
         this._saveStyles();
+        
+        // Create anonymous functions and keep references to register and unregister events.
+        this._proxied_onscroll = this._bind(this._onscroll, this);
+        this._proxied_onresize = this._bind(this._onresize, this);
+        
+        this.start();
     }
 
     FixToContainer.prototype = {
+        
+        // Returns an anonymous function that will call the given function in the given context
+        _bind : function (fn, context) {
+            return function () {
+                return fn.call(context);
+            };
+        },
 	
         // at ie8 maybe only in vm window resize event fires everytime an element is resized.
         _toresize : $.browser.msie && $.browser.version === '8.0' ? document.documentElement : window,
@@ -242,7 +265,56 @@ var fixto = (function ($, window, document) {
         _onresize: function () {
             this._unfix();
             this._onscroll();
+        },
+        
+        // Public method to stop the behaviour of this instance.        
+        stop: function () {
+            
+            // Unfix the container immediately.
+            this._unfix();
+            
+            // remove event listeners
+            $(window).unbind('scroll', this._proxied_onscroll);
+            $(this._toresize).unbind('resize', this._proxied_onresize);
+            
+            this._running = false;
+        },
+        
+        // Public method starts the behaviour of this instance.
+        start: function () {
+            
+            // Start only if it is not running not to attach event listeners multiple times.
+            if(!this._running) {
+                
+                // Trigger onscroll to have the effect immediately.
+                this._onscroll();
+                
+                // Attach event listeners
+                $(window).bind('scroll', this._proxied_onscroll);
+                $(this._toresize).bind('resize', this._proxied_onresize);
+                
+                this._running = true;
+            }
+        },
+        
+        //Public method to destroy fixto behaviour
+        destroy: function () {
+            this.stop();
+            
+            // Remove jquery data from the element
+            this._$child.removeData('fixto-instance');
+            
+            // Destroy mimic node instance
+            this._replacer.destroy();
+            
+            // set properties to null to break references
+            for (var prop in this) {
+                if (this.hasOwnProperty(prop)) {
+                  this[prop] = null;
+                }
+            }
         }
+        
     };
 
     var fixTo = function fixTo(childElement, parentElement, options) {
@@ -263,11 +335,28 @@ var fixto = (function ($, window, document) {
 
     // Let it be a jQuery Plugin
     $.fn.fixTo = function (targetSelector, options) {
-        var childs = this,
-            targets = $(targetSelector);
-        for (var i = 0, l = childs.length; i < l; i++) {
-            fixTo(childs[i], targets[i], options);
-        }
+         
+         var $targets = $(targetSelector);
+         
+         var i = 0;
+         return this.each(function () {
+                         
+             // Check the data of the element.
+             var instance = $(this).data('fixto-instance');
+             
+             // If the element is not bound to an instance, create the instance and save it to elements data.
+             if(!instance) {
+                 $(this).data('fixto-instance', fixTo(this, $targets[i], options));
+             }
+             else {
+                 // If we already have the instance here, expect that targetSelector parameter will be a string 
+                 // equal to a public methods name. Run the method on the instance without checking if 
+                 // it exists or it is a public method or not. Cause nasty errors when necessary.
+                 var method = targetSelector;
+                 instance[method].call(instance);
+             }
+             i++;
+          });
     };
 
     /*

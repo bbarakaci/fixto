@@ -1,10 +1,11 @@
 # fixto
 
-A jQuery plugin for sticky positioning. Fix containers to the viewport relative to an ancestor. To see it in action you can see the [demo page][demo] or development pages [development page 1][dev1], [development page 2][dev2].
+A jQuery plugin for sticky positioning. Fix containers to the viewport relative to an ancestor. To see it in action you can see the [demo page][demo] or development pages [development page 1][dev1], [development page 2][dev2], [development page 3][dev3].
 
 [demo]: http://bbarakaci.github.com/fixto
 [dev1]: http://bbarakaci.github.com/fixto/dev1.html
 [dev2]: http://bbarakaci.github.com/fixto/dev2.html
+[dev3]: http://bbarakaci.github.com/fixto/dev3.html
 
 ## Getting Started
 Download the [production version][min] or the [development version][max].
@@ -38,7 +39,7 @@ Passing options
         mind: '#header'
     });
     
-Usage without jQuery. This is the only way to have a reference to the instance, as yet.
+Instantiate without jQuery:
     
     var sticky = fixto.fixTo(domElementToFix, domElementToBeFixed, options);
 
@@ -68,14 +69,50 @@ Example
         mind: '#header'
     });
     
-Selector can be in any form that jQuery can handle. You can pass multiple elements. 
+Selector can be in any form that jQuery can handle. You can pass multiple elements.
+
+## Public Methods
+
+Following methods can be called directly on the instance or with jQuery.
+
+### destroy
+
+Destroys the instance:
+
+    instance.destroy();
+    
+jQuery:
+    
+    $('#nav').fixTo('destroy');
+    
+### stop
+
+Stops the instances behavior without destroying the instance.
+
+    instance.stop();
+
+jQuery:
+
+    $('#nav').fixTo('stop');
+    
+### start
+
+Starts the instances behavior.
+
+    instance.start();
+
+jQuery:
+
+    $('#nav').fixTo('start');
 
 ## Features
 - Responsive
+- Handles multiple instances
+- Start, stop, destroy
 
 ## Browser support
 
-Modern browsers, >= ie8 are supported. Touch devices are not supported.
+Modern browsers, ie8+ are supported. Touch devices are not supported.
 
 ## Known issues
 

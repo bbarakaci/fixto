@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>fixto, a jQuery plugin for sticky positioning</title>
+	<script src="libs/jquery/jquery.js" type="text/javascript" charset="utf-8"></script>
+    <script src="src/fixto.js" type="text/javascript" charset="utf-8"></script>
+    
+    <style>
+    
+        body {
+            height: 2000px;
+        }
+    
+        .sticky {
+            background-color: red;
+        }
+    
+    </style>
+    
+    
+</head>
+<body>
+
+<div class="sticky">
+    sticky
+    
+    <button class="stop">Stop</button>
+    <button class="start">Start</button>
+    <button class="destroy">Destroy</button>
+    
+</div>
+
+
+
+
+
+
+<script>
+var child = $('.sticky')[0];
+var parent = $('body')[0];
+var instance = new window.fixto.FixToContainer(this.child, this.parent);
+$('.stop').click(function () {
+    instance.stop();
+});
+$('.start').click(function () {
+    instance.start();
+});
+$('.destroy').click(function () {
+    instance.destroy();
+});
+
+
+
+</script>
+</body>
+</html>

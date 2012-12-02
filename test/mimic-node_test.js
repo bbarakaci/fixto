@@ -46,6 +46,12 @@
       this.md.hide();
       equal(this.md.replacer.style.display,'none', 'hide');
   });
+  test('destroy', function() {
+      var replacer = this.md.replacer;
+      this.md.destroy();
+      equal(replacer.parentNode, null);
+      equal(this.md.replacer, null);
+  });
 
 
 }(window.jQuery));
