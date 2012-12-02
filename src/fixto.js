@@ -147,9 +147,13 @@ var fixto = (function ($, window, document) {
         
         this._saveStyles();
         
+        this._saveViewportHeight();
+        
         // Create anonymous functions and keep references to register and unregister events.
         this._proxied_onscroll = this._bind(this._onscroll, this);
         this._proxied_onresize = this._bind(this._onresize, this);
+        
+        
         
         this.start();
     }
@@ -181,7 +185,11 @@ var fixto = (function ($, window, document) {
             this._scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
             this._parentBottom = (this.parent.offsetHeight + this._fullOffset('offsetTop', this.parent)) - computedStyle.getFloat(this.parent, 'paddingBottom');
             if (!this.fixed) {
-                if (this._scrollTop > (this._fullOffset('offsetTop', this.child) - computedStyle.getFloat(this.child, 'marginTop') - this._mindtop()) && this._scrollTop < this._parentBottom) {
+                if (
+                    this._scrollTop < this._parentBottom && 
+                    this._scrollTop > (this._fullOffset('offsetTop', this.child) - computedStyle.getFloat(this.child, 'marginTop') - this._mindtop()) && 
+                    this._viewportHeight > (this.child.offsetHeight + computedStyle.getFloat(this.child, 'marginTop') + computedStyle.getFloat(this.child, 'marginBottom'))
+                ) {
                     this._fix();
                     this._adjust();
                 }
@@ -263,8 +271,14 @@ var fixto = (function ($, window, document) {
         },
 
         _onresize: function () {
+            this._saveViewportHeight();
             this._unfix();
             this._onscroll();
+        },
+        
+        _saveViewportHeight: function () {
+            // ie8 doesn't support innerHeight
+            this._viewportHeight = window.innerHeight || document.documentElement.clientHeight;
         },
         
         // Public method to stop the behaviour of this instance.        
