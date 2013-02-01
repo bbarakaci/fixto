@@ -168,7 +168,7 @@ var fixto = (function ($, window, document) {
         },
 	
         // at ie8 maybe only in vm window resize event fires everytime an element is resized.
-        _toresize : $.browser.msie && $.browser.version === '8.0' ? document.documentElement : window,
+        _toresize : $.support.leadingWhitespace ? document.documentElement : window,
         
         // Returns the total outerHeight of the elements passed to mind option. Will return 0 if none.
         _mindtop: function () {
@@ -339,7 +339,7 @@ var fixto = (function ($, window, document) {
     No support for touch devices and ie lt 8
     */
     var touch = !!('ontouchstart' in window);
-    var ielt8 = $.browser.msie && $.browser.version < 8;
+    var ielt8 = !$.support.leadingWhitespace;
 
     if(touch || ielt8){
         fixTo = function(){
