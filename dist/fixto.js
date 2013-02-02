@@ -1,4 +1,4 @@
-/*! fixto - v0.1.6 - 2012-12-02
+/*! fixto - v0.1.7 - 2013-02-02
 * http://github.com/bbarakaci/fixto/*/
 
 
@@ -128,7 +128,14 @@ var fixto = (function ($, window, document) {
             computedStyle:computedStyle
         };
     }());
-
+    
+    // Dirty business
+    var ie = navigator.appName === 'Microsoft Internet Explorer';
+    var ieversion;
+    
+    if(ie){
+        ieversion = parseFloat(navigator.appVersion.split("MSIE")[1]);
+    }
 
     // Class FixToContainer
 
@@ -171,7 +178,7 @@ var fixto = (function ($, window, document) {
         },
 	
         // at ie8 maybe only in vm window resize event fires everytime an element is resized.
-        _toresize : $.browser.msie && $.browser.version === '8.0' ? document.documentElement : window,
+        _toresize : ieversion===8 ? document.documentElement : window,
         
         // Returns the total outerHeight of the elements passed to mind option. Will return 0 if none.
         _mindtop: function () {
@@ -342,9 +349,8 @@ var fixto = (function ($, window, document) {
     No support for touch devices and ie lt 8
     */
     var touch = !!('ontouchstart' in window);
-    var ielt8 = $.browser.msie && $.browser.version < 8;
-
-    if(touch || ielt8){
+    
+    if(touch || ieversion<8){
         fixTo = function(){
             return 'not supported';
         };
