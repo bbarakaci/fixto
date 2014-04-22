@@ -126,8 +126,25 @@ var fixto = (function ($, window, document) {
         };
     }());
     
+    function pippo(){
+        var parent = document.createElement('div');
+        var child = document.createElement('div');
+        parent.appendChild(child);
+        parent.style.transform = 'translate(0)';
+        parent.style.paddingTop = '10px';
+        parent.style.visibility = 'hidden';
+        child.style.position = 'fixed';
+        child.style.top = 0;
+        document.body.appendChild(parent);
+        console.log(child.getBoundingClientRect());
+    }
+    
+    // $(pippo);
+    
+    
+    
     // Dirty business
-    var ie = navigator.appName === 'Microsoft Internet Explorer';
+    var ie = navigator.appName === 'Microsoft Internet Explorer' || 'pointerEnabled' in navigator;
     var ieversion;
     
     if(ie){
@@ -192,11 +209,13 @@ var fixto = (function ($, window, document) {
             this._scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
             this._parentBottom = (this.parent.offsetHeight + this._fullOffset('offsetTop', this.parent)) - computedStyle.getFloat(this.parent, 'paddingBottom');
             if (!this.fixed) {
+                
                 if (
                     this._scrollTop < this._parentBottom && 
                     this._scrollTop > (this._fullOffset('offsetTop', this.child) - computedStyle.getFloat(this.child, 'marginTop') - this._mindtop()) && 
                     this._viewportHeight > (this.child.offsetHeight + computedStyle.getFloat(this.child, 'marginTop') + computedStyle.getFloat(this.child, 'marginBottom'))
                 ) {
+
                     this._fix();
                     this._adjust();
                 }
@@ -210,46 +229,102 @@ var fixto = (function ($, window, document) {
         },
 
         _adjust: function _adjust() {
-            var diff = (this._parentBottom - this._scrollTop) - (this.child.offsetHeight + computedStyle.getFloat(this.child, 'marginTop') + computedStyle.getFloat(this.child, 'marginBottom') + this._mindtop());
+            // Get positioning context.
+            var context = this._getContext();
+            var top = 0;
             var mindTop = this._mindtop();
-            if (diff < 0) {
-                this.child.style.top = (diff + mindTop) + 'px';
+            var diff = 0;
+            var childStyles = computedStyle.getAll(this.child);
+            
+            if(context !== document.documentElement && !ie) {
+                // There is a positioning context. Top should be according to the context.
+                top = this._scrollTop - this._fullOffset('offsetTop', context);
             }
-            else {
-                this.child.style.top = (0 + mindTop) + 'px';
+            
+            diff = (this._parentBottom - this._scrollTop) - (this.child.offsetHeight + computedStyle.toFloat(childStyles.marginTop) + computedStyle.toFloat(childStyles.marginBottom) + mindTop);
+            
+            if(diff>0) {
+                diff = 0;
             }
+            this.child.style.top = (diff + mindTop + top) + 'px';
         },
-
-        /*
-        I need some performance on calculating offset as it is called a lot of times.
-        This function calculates cumulative offsetTop way faster than jQuery $.offset
-        todo: check vs getBoundingClientRect
-        */
-
-        _fullOffset: function _fullOffset(offsetName, elm) {
+        // Calculate cumulative offset of the element.
+        // Optionally according to context
+        _fullOffset: function _fullOffset(offsetName, elm, context) {
             var offset = elm[offsetName];
-            while (elm.offsetParent !== null) {
-                elm = elm.offsetParent;
-                offset = offset + elm[offsetName];
+            var offsetParent = elm.offsetParent;
+            
+            // Add offset of the ascendent tree until we reach to the document root or to the given context
+            while (offsetParent !== null && offsetParent !== context) {
+                offset = offset + offsetParent[offsetName];
+                offsetParent = offsetParent.offsetParent;
             }
+            
             return offset;
+        },
+        
+        // Get positioning context of the element.
+        // We know that the closest parent that a transform rule applied will create a positioning context.
+        _getContext: function() {
+            var parent;
+            var element = this.child;
+            var context;
+            
+            // ie8 returns a context although transform is not supported. 
+            // check transform support first
+            if(element.style.transform === undefined && element.style.WebkitTransform === undefined) {
+                return document.documentElement;
+            }
+            
+            // Climb up the treee until reaching the context
+            while(!context) {
+                parent = element.parentNode;
+                if(parent === document.documentElement) {
+                    context = parent;
+                    break;
+                }
+                var styles = computedStyle.getAll(parent);
+                if( (styles.transform && styles.transform !== 'none') || 
+                    (styles.WebkitTransform && styles.WebkitTransform !== 'none') ||
+                    (styles.msTransform && styles.msTransform !== 'none') ) {
+                    context = parent;
+                    break;
+                }
+                element = parent;
+            }       
+            return context;
         },
 
         _fix: function _fix() {
-            var child = this.child,
-                childStyle = child.style;
+            var child = this.child;
+            var childStyle = child.style;
+            var context = this._getContext();
+            var childStyles = computedStyle.getAll(child);
+            var left = this._fullOffset('offsetLeft', child, context);
+            
             this._saveStyles();
-
+            
             if(document.documentElement.currentStyle){
-                var styles = computedStyle.getAll(child);
-                childStyle.left = (this._fullOffset('offsetLeft', child) - computedStyle.getFloat(child, 'marginLeft')) + 'px';
+                console.log('opera falls here');
                 // Function for ie<9. when hasLayout is not triggered in ie7, he will report currentStyle as auto, clientWidth as 0. Thus using offsetWidth.
-                childStyle.width = (child.offsetWidth) - (computedStyle.toFloat(styles.paddingLeft) + computedStyle.toFloat(styles.paddingRight) + computedStyle.toFloat(styles.borderLeftWidth) + computedStyle.toFloat(styles.borderRightWidth)) + 'px';
+                childStyle.width = (child.offsetWidth) - (computedStyle.toFloat(childStyles.paddingLeft) + computedStyle.toFloat(childStyles.paddingRight) + computedStyle.toFloat(childStyles.borderLeftWidth) + computedStyle.toFloat(childStyles.borderRightWidth)) + 'px';
             }
             else {
-                childStyle.width = computedStyle.get(child, 'width');
-                childStyle.left = (child.getBoundingClientRect().left - computedStyle.getFloat(child, 'marginLeft')) + 'px';
+                childStyle.width = childStyles.width;
             }
+            
+            // Ie still fixes the container according to the viewport.
+            // We will use client rectangle because offsetleft does not provide the left value of translated elements.
+            if(ie) {
+                left = child.getBoundingClientRect().left;
+            }
+            
+            // Opera differs from Chrome and Firefox. It reports body as offsetParent even when there is a positioning context.
+            // We need to calculate the left offset to the context by subtracting fullofset of context and the child element.
+            if(context !== document.documentElement && child.offsetParent === document.body) {
+                left =  this._fullOffset('offsetLeft', this.child) - this._fullOffset('offsetLeft', this.parent);
+            }
+            childStyle.left = (left - computedStyle.toFloat(childStyles.marginLeft)) + 'px';
 
             this._replacer.replace();
             childStyle.position = 'fixed';

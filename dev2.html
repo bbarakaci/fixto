@@ -8,9 +8,11 @@
 	body {
 	    padding:20px;
 	    font: 14px/21px "Trebuchet MS", Helvetica, Verdana, sans-serif;
+	   
 	}
 	    .csticky-holder {
-
+            transform: translate(0);
+            -webkit-transform: translate(0);
 	    }
 	    .csticky, .absolute {
 	        background: #97CE68;
@@ -33,9 +35,6 @@
 	</style>
 </head>
 <body>
-
-
-        
         <ul class="cstickies" >
             <li class="csticky-holder">
                 <div class="csticky">
@@ -102,6 +101,7 @@
 
 
 <script>
+  // $('.csticky').first().fixTo('.csticky-holder').first();
   $('.csticky').fixTo('.csticky-holder');
   // $('.absolute').fixTo('body');
 </script>
