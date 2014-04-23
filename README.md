@@ -43,6 +43,18 @@ Instantiate without jQuery:
     
     var sticky = fixto.fixTo(domElementToFix, domElementToBeFixed, options);
 
+### Use it on document load event
+
+Beginning from version 0.2.0 fixto does some feature detection during document load. Instantiate fixto using jQuery ready or native DOMContentLoaded event.
+
+    $(...);
+
+or
+
+    document.addEventListener("DOMContentLoaded", function() {
+        ...
+    });
+
 ## Styling
 
 When the container is fixed, it will receive the class name `fixto-fixed`. You may use this class or you may pass any other class name as an option.

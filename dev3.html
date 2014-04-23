@@ -36,21 +36,20 @@
 
 
 <script>
-var child = $('.sticky')[0];
-var parent = $('body')[0];
-var instance = new window.fixto.FixToContainer(this.child, this.parent);
-$('.stop').click(function () {
-    instance.stop();
-});
-$('.start').click(function () {
-    instance.start();
-});
-$('.destroy').click(function () {
-    instance.destroy();
-});
-
-
-
+    $(function() {
+        var child = $('.sticky')[0];
+        var parent = $('body')[0];
+        var instance = new window.fixto.FixToContainer(child, parent);
+        $('.stop').click(function () {
+            instance.stop();
+        });
+        $('.start').click(function () {
+            instance.start();
+        });
+        $('.destroy').click(function () {
+            instance.destroy();
+        });
+    });
 </script>
 </body>
 </html>
