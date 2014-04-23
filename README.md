@@ -47,7 +47,9 @@ Instantiate without jQuery:
 
 Beginning from version 0.2.0 fixto does some feature detection during document load. Instantiate fixto using jQuery ready or native DOMContentLoaded event.
 
-    $(...);
+    $(function(){
+        ...
+    });
 
 or
 
