@@ -110,6 +110,7 @@ jQuery:
 - Handles multiple instances
 - Start, stop, destroy
 - Sensitive to viewport height
+- Handles positioning context created by transformed ancestors. Although is ugly on Safari. See known issues.
 
 ## Browser support
 
@@ -118,3 +119,4 @@ Modern browsers, ie8+ are supported. Touch devices are not supported.
 ## Known issues
 
 - Doesn't work on elements having `margin:auto`. You will need an additional wrapper around the element. This is because webkit differs from other browsers about reporting the computed margin values.
+- There is flickering on Safari when there is a transformed parent. Still couldn't resolve that.

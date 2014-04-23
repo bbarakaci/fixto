@@ -126,25 +126,103 @@ var fixto = (function ($, window, document) {
         };
     }());
     
-    function pippo(){
+    // Class handles vendor prefixes
+    function Prefix() {
+        // Cached vendor will be stored when it is detected
+        this._vendor = null;
+
+        //this._dummy = document.createElement('div');
+    }
+    
+    Prefix.prototype = {
+        
+        _vendors: {
+          webkit: { cssPrefix: '-webkit-', jsPrefix: 'Webkit'},
+          moz: { cssPrefix: '-moz-', jsPrefix: 'Moz'},
+          ms: { cssPrefix: '-ms-', jsPrefix: 'ms'},
+          opera: { cssPrefix: '-o-', jsPrefix: 'O'}
+        },
+        
+        _prefixJsProperty: function(vendor, prop) {
+            return vendor.jsPrefix + prop[0].toUpperCase() + prop.substr(1);
+        },
+
+        /**
+         * Returns true if the property is supported
+         * @param {string} prop Property name
+         * @returns {boolean}
+         */
+        propertySupported: function(prop) {
+            // Supported property will return either inine style value or an empty string.
+            // Undefined means property is not supported.
+            return document.documentElement.style[prop] !== undefined;
+        },
+
+        /**
+         * Returns prefixed property name for js usage
+         * @param {string} prop Property name
+         * @returns {string|null}
+         */
+        getJsProperty: function(prop) {
+            // Try native property name first.
+            if(this.propertySupported(prop)) {
+                return prop;
+            }
+
+            // Prefix it if we know the vendor already
+            if(this._vendor) {
+                return this._prefixJsProperty(this._vendor, prop);
+            }
+
+            // We don't know the vendor, try all the possibilities
+            var prefixed;
+            for(var vendor in this._vendors) {
+                prefixed = this._prefixJsProperty(this._vendors[vendor], prop);
+                if(this.propertySupported(prefixed)) {
+                    // Vendor detected. Cache it.
+                    this._vendor = this._vendors[vendor];
+                    return prefixed;
+                }
+            }
+
+            // Nothing worked
+            return null;
+        }
+    };
+    
+    var prefix = new Prefix();
+    
+    // Will hold if browser creates a positioning context for fixed elements.
+    var fixedPositioningContext = false;
+
+    // We will need this frequently. Lets have it as a global until we encapsulate properly.
+    var transformJsProperty = prefix.getJsProperty('transform');
+    
+    // Check on dom ready if browser creates a positioning context for fixed elements.
+    // Transform rule will create a positioning context on browsers who follow the spec.
+    // Ie for example will fix it according to documentElement
+    $(function() {
         var parent = document.createElement('div');
         var child = document.createElement('div');
         parent.appendChild(child);
-        parent.style.transform = 'translate(0)';
-        parent.style.paddingTop = '10px';
+        parent.style[transformJsProperty] = 'translate(0)';
+        // Make sure there is space on top of parent
+        parent.style.marginTop = '10px';
         parent.style.visibility = 'hidden';
         child.style.position = 'fixed';
         child.style.top = 0;
         document.body.appendChild(parent);
-        console.log(child.getBoundingClientRect());
-    }
-    
-    // $(pippo);
-    
-    
+        var rect = child.getBoundingClientRect();
+        // If offset top is greater than 0 meand transformed element created a positioning context.
+        if(rect.top > 0) {
+            fixedPositioningContext = true;
+        }
+        // Remove dummy content
+        document.body.removeChild(parent);
+    });
     
     // Dirty business
-    var ie = navigator.appName === 'Microsoft Internet Explorer' || 'pointerEnabled' in navigator;
+    var ie = navigator.appName === 'Microsoft Internet Explorer';
     var ieversion;
     
     if(ie){
@@ -152,7 +230,6 @@ var fixto = (function ($, window, document) {
     }
 
     // Class FixToContainer
-
     function FixToContainer(child, parent, options) {
         this.child = child;
         this._$child = $(child);
@@ -177,8 +254,6 @@ var fixto = (function ($, window, document) {
         this._proxied_onscroll = this._bind(this._onscroll, this);
         this._proxied_onresize = this._bind(this._onresize, this);
         
-        
-        
         this.start();
     }
 
@@ -195,6 +270,7 @@ var fixto = (function ($, window, document) {
         _toresize : ieversion===8 ? document.documentElement : window,
         
         // Returns the total outerHeight of the elements passed to mind option. Will return 0 if none.
+        // TODO: Write without jquery
         _mindtop: function () {
             var top = 0;
             if(this._$mind) {
@@ -229,16 +305,19 @@ var fixto = (function ($, window, document) {
         },
 
         _adjust: function _adjust() {
-            // Get positioning context.
-            var context = this._getContext();
             var top = 0;
             var mindTop = this._mindtop();
             var diff = 0;
             var childStyles = computedStyle.getAll(this.child);
+            var context = null;
             
-            if(context !== document.documentElement && !ie) {
-                // There is a positioning context. Top should be according to the context.
-                top = this._scrollTop - this._fullOffset('offsetTop', context);
+            if(fixedPositioningContext) {
+                // Get positioning context.
+                context = this._getContext();
+                if(context) {
+                    // There is a positioning context. Top should be according to the context.
+                    top = Math.abs(context.getBoundingClientRect().top);
+                }
             }
             
             diff = (this._parentBottom - this._scrollTop) - (this.child.offsetHeight + computedStyle.toFloat(childStyles.marginTop) + computedStyle.toFloat(childStyles.marginBottom) + mindTop);
@@ -246,8 +325,10 @@ var fixto = (function ($, window, document) {
             if(diff>0) {
                 diff = 0;
             }
+            
             this.child.style.top = (diff + mindTop + top) + 'px';
         },
+        
         // Calculate cumulative offset of the element.
         // Optionally according to context
         _fullOffset: function _fullOffset(offsetName, elm, context) {
@@ -268,25 +349,19 @@ var fixto = (function ($, window, document) {
         _getContext: function() {
             var parent;
             var element = this.child;
-            var context;
-            
-            // ie8 returns a context although transform is not supported. 
-            // check transform support first
-            if(element.style.transform === undefined && element.style.WebkitTransform === undefined) {
-                return document.documentElement;
-            }
+            var context = null;
+            var styles;
             
             // Climb up the treee until reaching the context
             while(!context) {
                 parent = element.parentNode;
                 if(parent === document.documentElement) {
-                    context = parent;
-                    break;
+                    return null;
                 }
-                var styles = computedStyle.getAll(parent);
-                if( (styles.transform && styles.transform !== 'none') || 
-                    (styles.WebkitTransform && styles.WebkitTransform !== 'none') ||
-                    (styles.msTransform && styles.msTransform !== 'none') ) {
+                
+                styles = computedStyle.getAll(parent);
+                // Element has a transform rule
+                if(styles[transformJsProperty] !== 'none') {
                     context = parent;
                     break;
                 }
@@ -298,34 +373,29 @@ var fixto = (function ($, window, document) {
         _fix: function _fix() {
             var child = this.child;
             var childStyle = child.style;
-            var context = this._getContext();
             var childStyles = computedStyle.getAll(child);
-            var left = this._fullOffset('offsetLeft', child, context);
+            var left = child.getBoundingClientRect().left;
+            var width = childStyles.width;
             
             this._saveStyles();
             
             if(document.documentElement.currentStyle){
-                console.log('opera falls here');
-                // Function for ie<9. when hasLayout is not triggered in ie7, he will report currentStyle as auto, clientWidth as 0. Thus using offsetWidth.
-                childStyle.width = (child.offsetWidth) - (computedStyle.toFloat(childStyles.paddingLeft) + computedStyle.toFloat(childStyles.paddingRight) + computedStyle.toFloat(childStyles.borderLeftWidth) + computedStyle.toFloat(childStyles.borderRightWidth)) + 'px';
-            }
-            else {
-                childStyle.width = childStyles.width;
+                // Function for ie<9. When hasLayout is not triggered in ie7, he will report currentStyle as auto, clientWidth as 0. Thus using offsetWidth.
+                // Opera also falls here 
+                width = (child.offsetWidth) - (computedStyle.toFloat(childStyles.paddingLeft) + computedStyle.toFloat(childStyles.paddingRight) + computedStyle.toFloat(childStyles.borderLeftWidth) + computedStyle.toFloat(childStyles.borderRightWidth)) + 'px';
             }
             
             // Ie still fixes the container according to the viewport.
-            // We will use client rectangle because offsetleft does not provide the left value of translated elements.
-            if(ie) {
-                left = child.getBoundingClientRect().left;
+            if(fixedPositioningContext) {
+                var context = this._getContext();
+                if(context) {
+                    // There is a positioning context. Left should be according to the context.
+                    left = child.getBoundingClientRect().left - context.getBoundingClientRect().left;
+                }
             }
             
-            // Opera differs from Chrome and Firefox. It reports body as offsetParent even when there is a positioning context.
-            // We need to calculate the left offset to the context by subtracting fullofset of context and the child element.
-            if(context !== document.documentElement && child.offsetParent === document.body) {
-                left =  this._fullOffset('offsetLeft', this.child) - this._fullOffset('offsetLeft', this.parent);
-            }
             childStyle.left = (left - computedStyle.toFloat(childStyles.marginLeft)) + 'px';
-
+            childStyle.width = width;
             this._replacer.replace();
             childStyle.position = 'fixed';
             childStyle.top = this._mindtop() + 'px';
