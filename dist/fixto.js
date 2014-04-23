@@ -1,4 +1,4 @@
-/*! fixto - v0.1.7 - 2013-02-02
+/*! fixto - v0.2.0 - 2014-04-24
 * http://github.com/bbarakaci/fixto/*/
 
 
@@ -129,6 +129,101 @@ var fixto = (function ($, window, document) {
         };
     }());
     
+    // Class handles vendor prefixes
+    function Prefix() {
+        // Cached vendor will be stored when it is detected
+        this._vendor = null;
+
+        //this._dummy = document.createElement('div');
+    }
+    
+    Prefix.prototype = {
+        
+        _vendors: {
+          webkit: { cssPrefix: '-webkit-', jsPrefix: 'Webkit'},
+          moz: { cssPrefix: '-moz-', jsPrefix: 'Moz'},
+          ms: { cssPrefix: '-ms-', jsPrefix: 'ms'},
+          opera: { cssPrefix: '-o-', jsPrefix: 'O'}
+        },
+        
+        _prefixJsProperty: function(vendor, prop) {
+            return vendor.jsPrefix + prop[0].toUpperCase() + prop.substr(1);
+        },
+
+        /**
+         * Returns true if the property is supported
+         * @param {string} prop Property name
+         * @returns {boolean}
+         */
+        propertySupported: function(prop) {
+            // Supported property will return either inine style value or an empty string.
+            // Undefined means property is not supported.
+            return document.documentElement.style[prop] !== undefined;
+        },
+
+        /**
+         * Returns prefixed property name for js usage
+         * @param {string} prop Property name
+         * @returns {string|null}
+         */
+        getJsProperty: function(prop) {
+            // Try native property name first.
+            if(this.propertySupported(prop)) {
+                return prop;
+            }
+
+            // Prefix it if we know the vendor already
+            if(this._vendor) {
+                return this._prefixJsProperty(this._vendor, prop);
+            }
+
+            // We don't know the vendor, try all the possibilities
+            var prefixed;
+            for(var vendor in this._vendors) {
+                prefixed = this._prefixJsProperty(this._vendors[vendor], prop);
+                if(this.propertySupported(prefixed)) {
+                    // Vendor detected. Cache it.
+                    this._vendor = this._vendors[vendor];
+                    return prefixed;
+                }
+            }
+
+            // Nothing worked
+            return null;
+        }
+    };
+    
+    var prefix = new Prefix();
+    
+    // Will hold if browser creates a positioning context for fixed elements.
+    var fixedPositioningContext = false;
+
+    // We will need this frequently. Lets have it as a global until we encapsulate properly.
+    var transformJsProperty = prefix.getJsProperty('transform');
+    
+    // Check on dom ready if browser creates a positioning context for fixed elements.
+    // Transform rule will create a positioning context on browsers who follow the spec.
+    // Ie for example will fix it according to documentElement
+    $(function() {
+        var parent = document.createElement('div');
+        var child = document.createElement('div');
+        parent.appendChild(child);
+        parent.style[transformJsProperty] = 'translate(0)';
+        // Make sure there is space on top of parent
+        parent.style.marginTop = '10px';
+        parent.style.visibility = 'hidden';
+        child.style.position = 'fixed';
+        child.style.top = 0;
+        document.body.appendChild(parent);
+        var rect = child.getBoundingClientRect();
+        // If offset top is greater than 0 meand transformed element created a positioning context.
+        if(rect.top > 0) {
+            fixedPositioningContext = true;
+        }
+        // Remove dummy content
+        document.body.removeChild(parent);
+    });
+    
     // Dirty business
     var ie = navigator.appName === 'Microsoft Internet Explorer';
     var ieversion;
@@ -138,7 +233,6 @@ var fixto = (function ($, window, document) {
     }
 
     // Class FixToContainer
-
     function FixToContainer(child, parent, options) {
         this.child = child;
         this._$child = $(child);
@@ -163,8 +257,6 @@ var fixto = (function ($, window, document) {
         this._proxied_onscroll = this._bind(this._onscroll, this);
         this._proxied_onresize = this._bind(this._onresize, this);
         
-        
-        
         this.start();
     }
 
@@ -181,6 +273,7 @@ var fixto = (function ($, window, document) {
         _toresize : ieversion===8 ? document.documentElement : window,
         
         // Returns the total outerHeight of the elements passed to mind option. Will return 0 if none.
+        // TODO: Write without jquery
         _mindtop: function () {
             var top = 0;
             if(this._$mind) {
@@ -195,11 +288,13 @@ var fixto = (function ($, window, document) {
             this._scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
             this._parentBottom = (this.parent.offsetHeight + this._fullOffset('offsetTop', this.parent)) - computedStyle.getFloat(this.parent, 'paddingBottom');
             if (!this.fixed) {
+                
                 if (
                     this._scrollTop < this._parentBottom && 
                     this._scrollTop > (this._fullOffset('offsetTop', this.child) - computedStyle.getFloat(this.child, 'marginTop') - this._mindtop()) && 
                     this._viewportHeight > (this.child.offsetHeight + computedStyle.getFloat(this.child, 'marginTop') + computedStyle.getFloat(this.child, 'marginBottom'))
                 ) {
+
                     this._fix();
                     this._adjust();
                 }
@@ -213,47 +308,97 @@ var fixto = (function ($, window, document) {
         },
 
         _adjust: function _adjust() {
-            var diff = (this._parentBottom - this._scrollTop) - (this.child.offsetHeight + computedStyle.getFloat(this.child, 'marginTop') + computedStyle.getFloat(this.child, 'marginBottom') + this._mindtop());
+            var top = 0;
             var mindTop = this._mindtop();
-            if (diff < 0) {
-                this.child.style.top = (diff + mindTop) + 'px';
+            var diff = 0;
+            var childStyles = computedStyle.getAll(this.child);
+            var context = null;
+            
+            if(fixedPositioningContext) {
+                // Get positioning context.
+                context = this._getContext();
+                if(context) {
+                    // There is a positioning context. Top should be according to the context.
+                    top = Math.abs(context.getBoundingClientRect().top);
+                }
             }
-            else {
-                this.child.style.top = (0 + mindTop) + 'px';
+            
+            diff = (this._parentBottom - this._scrollTop) - (this.child.offsetHeight + computedStyle.toFloat(childStyles.marginTop) + computedStyle.toFloat(childStyles.marginBottom) + mindTop);
+            
+            if(diff>0) {
+                diff = 0;
             }
+            
+            this.child.style.top = (diff + mindTop + top) + 'px';
         },
-
-        /*
-        I need some performance on calculating offset as it is called a lot of times.
-        This function calculates cumulative offsetTop way faster than jQuery $.offset
-        todo: check vs getBoundingClientRect
-        */
-
-        _fullOffset: function _fullOffset(offsetName, elm) {
+        
+        // Calculate cumulative offset of the element.
+        // Optionally according to context
+        _fullOffset: function _fullOffset(offsetName, elm, context) {
             var offset = elm[offsetName];
-            while (elm.offsetParent !== null) {
-                elm = elm.offsetParent;
-                offset = offset + elm[offsetName];
+            var offsetParent = elm.offsetParent;
+            
+            // Add offset of the ascendent tree until we reach to the document root or to the given context
+            while (offsetParent !== null && offsetParent !== context) {
+                offset = offset + offsetParent[offsetName];
+                offsetParent = offsetParent.offsetParent;
             }
+            
             return offset;
+        },
+        
+        // Get positioning context of the element.
+        // We know that the closest parent that a transform rule applied will create a positioning context.
+        _getContext: function() {
+            var parent;
+            var element = this.child;
+            var context = null;
+            var styles;
+            
+            // Climb up the treee until reaching the context
+            while(!context) {
+                parent = element.parentNode;
+                if(parent === document.documentElement) {
+                    return null;
+                }
+                
+                styles = computedStyle.getAll(parent);
+                // Element has a transform rule
+                if(styles[transformJsProperty] !== 'none') {
+                    context = parent;
+                    break;
+                }
+                element = parent;
+            }       
+            return context;
         },
 
         _fix: function _fix() {
-            var child = this.child,
-                childStyle = child.style;
+            var child = this.child;
+            var childStyle = child.style;
+            var childStyles = computedStyle.getAll(child);
+            var left = child.getBoundingClientRect().left;
+            var width = childStyles.width;
+            
             this._saveStyles();
-
+            
             if(document.documentElement.currentStyle){
-                var styles = computedStyle.getAll(child);
-                childStyle.left = (this._fullOffset('offsetLeft', child) - computedStyle.getFloat(child, 'marginLeft')) + 'px';
-                // Function for ie<9. when hasLayout is not triggered in ie7, he will report currentStyle as auto, clientWidth as 0. Thus using offsetWidth.
-                childStyle.width = (child.offsetWidth) - (computedStyle.toFloat(styles.paddingLeft) + computedStyle.toFloat(styles.paddingRight) + computedStyle.toFloat(styles.borderLeftWidth) + computedStyle.toFloat(styles.borderRightWidth)) + 'px';
+                // Function for ie<9. When hasLayout is not triggered in ie7, he will report currentStyle as auto, clientWidth as 0. Thus using offsetWidth.
+                // Opera also falls here 
+                width = (child.offsetWidth) - (computedStyle.toFloat(childStyles.paddingLeft) + computedStyle.toFloat(childStyles.paddingRight) + computedStyle.toFloat(childStyles.borderLeftWidth) + computedStyle.toFloat(childStyles.borderRightWidth)) + 'px';
             }
-            else {
-                childStyle.width = computedStyle.get(child, 'width');
-                childStyle.left = (child.getBoundingClientRect().left - computedStyle.getFloat(child, 'marginLeft')) + 'px';
+            
+            // Ie still fixes the container according to the viewport.
+            if(fixedPositioningContext) {
+                var context = this._getContext();
+                if(context) {
+                    // There is a positioning context. Left should be according to the context.
+                    left = child.getBoundingClientRect().left - context.getBoundingClientRect().left;
+                }
             }
-
+            
+            childStyle.left = (left - computedStyle.toFloat(childStyles.marginLeft)) + 'px';
+            childStyle.width = width;
             this._replacer.replace();
             childStyle.position = 'fixed';
             childStyle.top = this._mindtop() + 'px';
