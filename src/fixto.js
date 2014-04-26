@@ -147,6 +147,15 @@ var fixto = (function ($, window, document) {
             return vendor.jsPrefix + prop[0].toUpperCase() + prop.substr(1);
         },
 
+        _prefixValue: function(vendor, value) {
+            return vendor.cssPrefix + value;
+        },
+
+        _valueSupported: function(prop, value, dummy) {
+            dummy.style[prop] = value;
+            return dummy.style[prop] === value;
+        },
+
         /**
          * Returns true if the property is supported
          * @param {string} prop Property name
@@ -187,6 +196,47 @@ var fixto = (function ($, window, document) {
 
             // Nothing worked
             return null;
+        },
+
+        /**
+         * Returns supported css value for css property. Could be used to check support or get prefixed value string.
+         * @param {string} prop Property
+         * @param {string} value Value name
+         * @returns {string|null}
+         */
+        getCssValue: function(prop, value) {
+            // Create dummy element to test value
+            var dummy = document.createElement('div');
+
+            // Get supported property name
+            var jsProperty = this.getJsProperty(prop);
+
+            // Try unprefixed value 
+            if(this._valueSupported(jsProperty, value, dummy)) {
+                return value;
+            }
+
+            var prefixedValue;
+
+            // If we know the vendor already try prefixed value
+            if(this._vendor) {
+                prefixedValue = this._prefixValue(this._vendor, value);
+                if(this._valueSupported(jsProperty, prefixedValue, dummy)) {
+                    return prefixedValue;
+                }
+            }
+
+            // Try all vendors
+            for(var vendor in this._vendors) {
+                prefixedValue = this._prefixValue(this._vendors[vendor], value);
+                if(this._valueSupported(jsProperty, prefixedValue, dummy)) {
+                    // Vendor detected. Cache it.
+                    this._vendor = this._vendors[vendor];
+                    return prefixedValue;
+                }
+            }
+            // No support for value
+            return null;
         }
     };
     
@@ -220,6 +270,12 @@ var fixto = (function ($, window, document) {
         // Remove dummy content
         document.body.removeChild(parent);
     });
+
+    // It will return null if position sticky is not supported
+    var nativeStickyValue = prefix.getCssValue('position', 'sticky');
+
+    // It will return null if position fixed is not supported
+    var fixedPositionValue = prefix.getCssValue('position', 'fixed');
     
     // Dirty business
     var ie = navigator.appName === 'Microsoft Internet Explorer';
@@ -229,13 +285,10 @@ var fixto = (function ($, window, document) {
         ieversion = parseFloat(navigator.appVersion.split("MSIE")[1]);
     }
 
-    // Class FixToContainer
-    function FixToContainer(child, parent, options) {
+    function FixTo(child, parent, options) {
         this.child = child;
         this._$child = $(child);
         this.parent = parent;
-        this._replacer = new mimicNode.MimicNode(child);
-        this._ghostNode = this._replacer.replacer;
         this.options = $.extend({
             className: 'fixto-fixed'
         }, options);
@@ -245,30 +298,9 @@ var fixto = (function ($, window, document) {
         if(this.options.zIndex) {
             this.child.style.zIndex = this.options.zIndex;
         }
-        
-        this._saveStyles();
-        
-        this._saveViewportHeight();
-        
-        // Create anonymous functions and keep references to register and unregister events.
-        this._proxied_onscroll = this._bind(this._onscroll, this);
-        this._proxied_onresize = this._bind(this._onresize, this);
-        
-        this.start();
     }
 
-    FixToContainer.prototype = {
-        
-        // Returns an anonymous function that will call the given function in the given context
-        _bind : function (fn, context) {
-            return function () {
-                return fn.call(context);
-            };
-        },
-	
-        // at ie8 maybe only in vm window resize event fires everytime an element is resized.
-        _toresize : ieversion===8 ? document.documentElement : window,
-        
+    FixTo.prototype = {
         // Returns the total outerHeight of the elements passed to mind option. Will return 0 if none.
         // TODO: Write without jquery
         _mindtop: function () {
@@ -280,16 +312,97 @@ var fixto = (function ($, window, document) {
             }
             return top;
         },
+        
+        // Public method to stop the behaviour of this instance.        
+        stop: function () {
+            this._stop();      
+            this._running = false;
+        },
+
+        // Public method starts the behaviour of this instance.
+        start: function () {
+            
+            // Start only if it is not running not to attach event listeners multiple times.
+            if(!this._running) {
+                this._start();
+                this._running = true;
+            }
+        },
+
+        //Public method to destroy fixto behaviour
+        destroy: function () {
+            this.stop();
+
+            this._destroy();
+            
+            // Remove jquery data from the element
+            this._$child.removeData('fixto-instance');
+            
+            // set properties to null to break references
+            for (var prop in this) {
+                if (this.hasOwnProperty(prop)) {
+                  this[prop] = null;
+                }
+            }
+        },
+
+        // Methods could be implemented by subclasses
+
+        _stop: function() {
+
+        },
+
+        _start: function() {
+
+        },
+
+        _destroy: function() {
+
+        }
+    };
+
+    // Class FixToContainer
+    function FixToContainer(child, parent, options) {
+        FixTo.call(this, child, parent, options);
+        this._replacer = new mimicNode.MimicNode(child);
+        this._ghostNode = this._replacer.replacer;
+
+        this._saveStyles();
+        
+        this._saveViewportHeight();
+        
+        // Create anonymous functions and keep references to register and unregister events.
+        this._proxied_onscroll = this._bind(this._onscroll, this);
+        this._proxied_onresize = this._bind(this._onresize, this);
+        
+        this.start();
+    }
+
+    FixToContainer.prototype = new FixTo();
+
+    $.extend(FixToContainer.prototype, {
+        
+        // Returns an anonymous function that will call the given function in the given context
+        _bind : function (fn, context) {
+            return function () {
+                return fn.call(context);
+            };
+        },
+	
+        // at ie8 maybe only in vm window resize event fires everytime an element is resized.
+        _toresize : ieversion===8 ? document.documentElement : window,
 
         _onscroll: function _onscroll() {
             this._scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
             this._parentBottom = (this.parent.offsetHeight + this._fullOffset('offsetTop', this.parent)) - computedStyle.getFloat(this.parent, 'paddingBottom');
             if (!this.fixed) {
+
+                var childStyles = computedStyle.getAll(this.child);
                 
                 if (
                     this._scrollTop < this._parentBottom && 
-                    this._scrollTop > (this._fullOffset('offsetTop', this.child) - computedStyle.getFloat(this.child, 'marginTop') - this._mindtop()) && 
-                    this._viewportHeight > (this.child.offsetHeight + computedStyle.getFloat(this.child, 'marginTop') + computedStyle.getFloat(this.child, 'marginBottom'))
+                    this._scrollTop > (this._fullOffset('offsetTop', this.child) - computedStyle.toFloat(childStyles.marginTop) - this._mindtop()) && 
+                    this._viewportHeight > (this.child.offsetHeight + computedStyle.toFloat(childStyles.marginTop) + computedStyle.toFloat(childStyles.marginBottom))
                 ) {
 
                     this._fix();
@@ -432,67 +545,84 @@ var fixto = (function ($, window, document) {
             // ie8 doesn't support innerHeight
             this._viewportHeight = window.innerHeight || document.documentElement.clientHeight;
         },
-        
-        // Public method to stop the behaviour of this instance.        
-        stop: function () {
-            
+
+        _stop: function() {
             // Unfix the container immediately.
             this._unfix();
-            
             // remove event listeners
             $(window).unbind('scroll', this._proxied_onscroll);
             $(this._toresize).unbind('resize', this._proxied_onresize);
-            
-            this._running = false;
         },
-        
-        // Public method starts the behaviour of this instance.
-        start: function () {
+
+        _start: function() {
+            // Trigger onscroll to have the effect immediately.
+            this._onscroll();
             
-            // Start only if it is not running not to attach event listeners multiple times.
-            if(!this._running) {
-                
-                // Trigger onscroll to have the effect immediately.
-                this._onscroll();
-                
-                // Attach event listeners
-                $(window).bind('scroll', this._proxied_onscroll);
-                $(this._toresize).bind('resize', this._proxied_onresize);
-                
-                this._running = true;
-            }
+            // Attach event listeners
+            $(window).bind('scroll', this._proxied_onscroll);
+            $(this._toresize).bind('resize', this._proxied_onresize);
         },
-        
-        //Public method to destroy fixto behaviour
-        destroy: function () {
-            this.stop();
-            
-            // Remove jquery data from the element
-            this._$child.removeData('fixto-instance');
-            
+
+        _destroy: function() {
             // Destroy mimic node instance
             this._replacer.destroy();
-            
-            // set properties to null to break references
-            for (var prop in this) {
-                if (this.hasOwnProperty(prop)) {
-                  this[prop] = null;
-                }
-            }
         }
-        
-    };
+    });
+
+    function NativeSticky(child, parent, options) {
+        FixTo.call(this, child, parent, options);
+        this.start();
+    }
+
+    NativeSticky.prototype = new FixTo();
+
+    $.extend(NativeSticky.prototype, {
+        _start: function() {
+            this._parentOriginalPosition = computedStyle.get(this.parent, 'position');
+            // TODO: How will it behave if parent is sticky?
+            if(this._parentOriginalPosition !== 'relative' && this._parentOriginalPosition !== 'absolute') {
+                this.parent.style.position = 'relative';
+            }
+
+            var childStyles = computedStyle.getAll(this.child);
+
+            this._childOriginalPosition = childStyles.position;
+            this._childOriginalTop = childStyles.top;
+
+            this.child.style.position = nativeStickyValue;
+            this.child.style.top = this._mindtop() + 'px';
+        },
+
+        _stop: function() {
+            this.child.style.position = this._childOriginalPosition;
+            this.child.style.top = this._childOriginalTop;
+        }
+    });
+
+    
 
     var fixTo = function fixTo(childElement, parentElement, options) {
-        return new FixToContainer(childElement, parentElement, options);
+        // Position sticky supported
+        if(nativeStickyValue) {
+            return new NativeSticky(childElement, parentElement, options);
+        }
+        // Position fixed supported
+        else if(fixedPositionValue) {
+            return new FixToContainer(childElement, parentElement, options);
+        }
+        // Grandpa?
+        else {
+            return 'neither fixed nor sticky positioning supported';
+        }
+        
     };
 
     /*
     No support for touch devices and ie lt 8
     */
-    var touch = !!('ontouchstart' in window);
+    //var touch = !!('ontouchstart' in window);
     
-    if(touch || ieversion<8){
+    if(ieversion<8){
         fixTo = function(){
             return 'not supported';
         };
