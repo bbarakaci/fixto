@@ -358,6 +358,10 @@ var fixto = (function ($, window, document) {
 
         _destroy: function() {
 
+        },
+
+        refresh: function() {
+            
         }
     };
 
@@ -536,9 +540,7 @@ var fixto = (function ($, window, document) {
         },
 
         _onresize: function () {
-            this._saveViewportHeight();
-            this._unfix();
-            this._onscroll();
+            this.refresh();
         },
         
         _saveViewportHeight: function () {
@@ -566,6 +568,12 @@ var fixto = (function ($, window, document) {
         _destroy: function() {
             // Destroy mimic node instance
             this._replacer.destroy();
+        },
+
+        refresh: function() {
+            this._saveViewportHeight();
+            this._unfix();
+            this._onscroll();
         }
     });
 
