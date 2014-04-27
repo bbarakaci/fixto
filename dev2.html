@@ -56,7 +56,7 @@
                 </div>
                 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce nulla ligula, egestas sit amet malesuada vel, iaculis at mi. Donec vestibulum nunc at neque pretium et egestas erat scelerisque. Pellentesque hendrerit egestas eros, non mattis arcu viverra vitae. Praesent tincidunt magna at urna ultrices consequat. Phasellus cursus rutrum lectus non dapibus. Curabitur lorem lorem, blandit vitae vehicula eget, sagittis vitae dolor. Integer sed ipsum sed elit facilisis commodo quis a urna. Mauris scelerisque nibh in metus tempor tristique. Fusce commodo sagittis ultrices. Pellentesque sit amet fermentum orci. Maecenas sollicitudin arcu non felis mollis ac laoreet augue mattis. Morbi condimentum turpis eu ipsum dapibus et euismod risus dapibus. Mauris mauris nisl, rutrum eu ultrices vel, cursus at massa. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
             </li>
-            <li class="csticky-holder" style="overflow:auto">
+            <li class="csticky-holder">
 
                     <div class="csticky" style="float:left;margin:0 10px 10px 0">
                         Sticky floats left.
@@ -67,7 +67,7 @@
                 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce nulla ligula, egestas sit amet malesuada vel, iaculis at mi. Donec vestibulum nunc at neque pretium et egestas erat scelerisque. Pellentesque hendrerit egestas eros, non mattis arcu viverra vitae. Praesent tincidunt magna at urna ultrices consequat. Phasellus cursus rutrum lectus non dapibus. Curabitur lorem lorem, blandit vitae vehicula eget, sagittis vitae dolor. Integer sed ipsum sed elit facilisis commodo quis a urna. Mauris scelerisque nibh in metus tempor tristique. Fusce commodo sagittis ultrices. Pellentesque sit amet fermentum orci. Maecenas sollicitudin arcu non felis mollis ac laoreet augue mattis. Morbi condimentum turpis eu ipsum dapibus et euismod risus dapibus. Mauris mauris nisl, rutrum eu ultrices vel, cursus at massa. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
 
             </li>
-            <li class="csticky-holder" style="overflow:auto">
+            <li class="csticky-holder">
 
                     <div class="csticky" style="float:right">
                         Sticky floats right
@@ -76,7 +76,7 @@
                 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce nulla ligula, egestas sit amet malesuada vel, iaculis at mi. Donec vestibulum nunc at neque pretium et egestas erat scelerisque. Pellentesque hendrerit egestas eros, non mattis arcu viverra vitae. Praesent tincidunt magna at urna ultrices consequat. Phasellus cursus rutrum lectus non dapibus. Curabitur lorem lorem, blandit vitae vehicula eget, sagittis vitae dolor. Integer sed ipsum sed elit facilisis commodo quis a urna. Mauris scelerisque nibh in metus tempor tristique. Fusce commodo sagittis ultrices. Pellentesque sit amet fermentum orci. Maecenas sollicitudin arcu non felis mollis ac laoreet augue mattis. Morbi condimentum turpis eu ipsum dapibus et euismod risus dapibus. Mauris mauris nisl, rutrum eu ultrices vel, cursus at massa. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
 
             </li>
-            <li class="csticky-holder" style="overflow:auto">
+            <li class="csticky-holder">
 
                     <div class="csticky" style="height:400px">
                         Sticky is tall. It will not be fixed if viewport is shorter.
@@ -99,7 +99,7 @@
 
 $(function() {
     // $('.csticky').first().fixTo('.csticky-holder').first();
-    $('.csticky').fixTo('.csticky-holder');
+    $('.csticky').fixTo('.csticky-holder', {top: 20});
     // $('.absolute').fixTo('body');
 });
 

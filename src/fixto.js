@@ -289,15 +289,11 @@ var fixto = (function ($, window, document) {
         this.child = child;
         this._$child = $(child);
         this.parent = parent;
-        this.options = $.extend({
-            className: 'fixto-fixed'
-        }, options);
-        if(this.options.mind) {
-            this._$mind = $(this.options.mind);
-        }
-        if(this.options.zIndex) {
-            this.child.style.zIndex = this.options.zIndex;
-        }
+        this.options = {
+            className: 'fixto-fixed',
+            top: 0
+        };
+        this._setOptions(options);
     }
 
     FixTo.prototype = {
@@ -346,6 +342,21 @@ var fixto = (function ($, window, document) {
             }
         },
 
+        _setOptions: function(options) {
+            $.extend(this.options, options);
+            if(this.options.mind) {
+                this._$mind = $(this.options.mind);
+            }
+            if(this.options.zIndex) {
+                this.child.style.zIndex = this.options.zIndex;
+            }
+        },
+
+        setOptions: function(options) {
+            this._setOptions(options);
+            this.refresh();
+        },
+
         // Methods could be implemented by subclasses
 
         _stop: function() {
@@ -361,7 +372,7 @@ var fixto = (function ($, window, document) {
         },
 
         refresh: function() {
-            
+
         }
     };
 
@@ -405,7 +416,7 @@ var fixto = (function ($, window, document) {
                 
                 if (
                     this._scrollTop < this._parentBottom && 
-                    this._scrollTop > (this._fullOffset('offsetTop', this.child) - computedStyle.toFloat(childStyles.marginTop) - this._mindtop()) && 
+                    this._scrollTop > (this._fullOffset('offsetTop', this.child) - this.options.top - this._mindtop()) && 
                     this._viewportHeight > (this.child.offsetHeight + computedStyle.toFloat(childStyles.marginTop) + computedStyle.toFloat(childStyles.marginBottom))
                 ) {
 
@@ -413,7 +424,7 @@ var fixto = (function ($, window, document) {
                     this._adjust();
                 }
             } else {
-                if (this._scrollTop > this._parentBottom || this._scrollTop < (this._fullOffset('offsetTop', this._ghostNode) - computedStyle.getFloat(this._ghostNode, 'marginTop') - this._mindtop())) {
+                if (this._scrollTop > this._parentBottom || this._scrollTop < (this._fullOffset('offsetTop', this._ghostNode) - this.options.top - this._mindtop())) {
                     this._unfix();
                     return;
                 }
@@ -437,13 +448,13 @@ var fixto = (function ($, window, document) {
                 }
             }
             
-            diff = (this._parentBottom - this._scrollTop) - (this.child.offsetHeight + computedStyle.toFloat(childStyles.marginTop) + computedStyle.toFloat(childStyles.marginBottom) + mindTop);
+            diff = (this._parentBottom - this._scrollTop) - (this.child.offsetHeight + computedStyle.toFloat(childStyles.marginBottom) + mindTop + this.options.top);
             
             if(diff>0) {
                 diff = 0;
             }
             
-            this.child.style.top = (diff + mindTop + top) + 'px';
+            this.child.style.top = (diff + mindTop + top + this.options.top) - computedStyle.toFloat(childStyles.marginTop) + 'px';
         },
         
         // Calculate cumulative offset of the element.
@@ -515,7 +526,7 @@ var fixto = (function ($, window, document) {
             childStyle.width = width;
             this._replacer.replace();
             childStyle.position = 'fixed';
-            childStyle.top = this._mindtop() + 'px';
+            childStyle.top = this._mindtop() + this.options.top - computedStyle.toFloat(childStyles.marginTop) + 'px';
             this._$child.addClass(this.options.className);
             this.fixed = true;
         },
@@ -598,12 +609,16 @@ var fixto = (function ($, window, document) {
             this._childOriginalTop = childStyles.top;
 
             this.child.style.position = nativeStickyValue;
-            this.child.style.top = this._mindtop() + 'px';
+            this.refresh();
         },
 
         _stop: function() {
             this.child.style.position = this._childOriginalPosition;
             this.child.style.top = this._childOriginalTop;
+        },
+
+        refresh: function() {
+            this.child.style.top = this._mindtop() + this.options.top + 'px';
         }
     });
 
@@ -656,7 +671,7 @@ var fixto = (function ($, window, document) {
                  // equal to a public methods name. Run the method on the instance without checking if 
                  // it exists or it is a public method or not. Cause nasty errors when necessary.
                  var method = targetSelector;
-                 instance[method].call(instance);
+                 instance[method].call(instance, options);
              }
              i++;
           });
