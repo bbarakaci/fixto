@@ -22,7 +22,7 @@ A jQuery plugin for sticky positioning. Fix containers to the viewport relative 
 - Handles multiple instances
 - Start, stop, destroy
 - Sensitive to viewport height
-- Handles positioning context created by transformed ancestors. Although is ugly on Safari. See known issues.
+- Handles positioning context created by transformed ancestors.
 - Uses native position sticky when available
 
 ## Browser support
@@ -65,20 +65,6 @@ Passing options
 Instantiate without jQuery:
     
     var sticky = fixto.fixTo(domElementToFix, domElementToBeFixed, options);
-
-### Use it on document load event
-
-Beginning from version 0.2.0 fixto does some feature detection during document load. Instantiate fixto using jQuery ready or native DOMContentLoaded event.
-
-    $(function(){
-        ...
-    });
-
-or
-
-    document.addEventListener("DOMContentLoaded", function() {
-        ...
-    });
 
 ## Styling
 
@@ -184,7 +170,7 @@ jQuery:
 ## Known issues
 
 - Doesn't work on elements having `margin:auto`. You will need an additional wrapper around the element. This is because webkit differs from other browsers about reporting the computed margin values.
-- There is flickering on Safari when there is a transformed parent. Still couldn't resolve that.
+- There is flickering on Safari when there is a transformed parent and if native sticky positioning is not used. Still couldn't resolve that. Safari already supports native sticky positioning so you will observe this issue only if you disable native sticky support.
 
 ## Release notes
 ### 0.3.0
@@ -194,6 +180,8 @@ jQuery:
 - useNativeSticky option added
 - setOptions method added
 - refresh method added
+- No need to use it on document ready. Feature detection will be done during first instantiation.
 
 ### 0.2.0
 - Ancestors with css transform rules does not break the functionality anymore.
+- Needs to be used only during or after document ready

@@ -241,17 +241,19 @@ var fixto = (function ($, window, document) {
     };
     
     var prefix = new Prefix();
-    
-    // Will hold if browser creates a positioning context for fixed elements.
-    var fixedPositioningContext = false;
 
     // We will need this frequently. Lets have it as a global until we encapsulate properly.
     var transformJsProperty = prefix.getJsProperty('transform');
     
-    // Check on dom ready if browser creates a positioning context for fixed elements.
+    // Will hold if browser creates a positioning context for fixed elements.
+    var fixedPositioningContext;
+
+    // Checks if browser creates a positioning context for fixed elements.
     // Transform rule will create a positioning context on browsers who follow the spec.
     // Ie for example will fix it according to documentElement
-    $(function() {
+    // TODO: Other css rules also effects. perspective creates at chrome but not in firefox. transform-style preserve3d effects.
+    function checkFixedPositioningContextSupport() {
+        var support = false;
         var parent = document.createElement('div');
         var child = document.createElement('div');
         parent.appendChild(child);
@@ -265,11 +267,12 @@ var fixto = (function ($, window, document) {
         var rect = child.getBoundingClientRect();
         // If offset top is greater than 0 meand transformed element created a positioning context.
         if(rect.top > 0) {
-            fixedPositioningContext = true;
+            support = true;
         }
         // Remove dummy content
         document.body.removeChild(parent);
-    });
+        return support;
+    }
 
     // It will return null if position sticky is not supported
     var nativeStickyValue = prefix.getCssValue('position', 'sticky');
@@ -636,6 +639,12 @@ var fixto = (function ($, window, document) {
         }
         else if(fixedPositionValue) {
              // Position fixed supported
+
+             if(fixedPositioningContext===undefined) {
+                // We don't know yet if browser creates fixed positioning contexts. Check it.
+                fixedPositioningContext = checkFixedPositioningContextSupport();
+             }
+
             return new FixToContainer(childElement, parentElement, options);
         }
         else {
