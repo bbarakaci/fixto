@@ -39,7 +39,7 @@
     $(function() {
         var child = $('.sticky')[0];
         var parent = $('body')[0];
-        var instance = new window.fixto.fixTo(child, parent);
+        var instance = window.fixto.fixTo(child, parent);
         $('.stop').click(function () {
             instance.stop();
         });

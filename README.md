@@ -7,6 +7,28 @@ A jQuery plugin for sticky positioning. Fix containers to the viewport relative 
 [dev2]: http://bbarakaci.github.com/fixto/dev2.html
 [dev3]: http://bbarakaci.github.com/fixto/dev3.html
 
+- [Features](#features)
+- [Browser support](#browser-support)
+- [Getting Started](#getting-started)
+- [Usage](#usage)
+- [Styling](#styling)
+- [Options](#options)
+- [Public Methods](#public-methods)
+- [Known issues](#known-issues)
+- [Release notes](#release-notes)
+
+## Features
+- Responsive
+- Handles multiple instances
+- Start, stop, destroy
+- Sensitive to viewport height
+- Handles positioning context created by transformed ancestors. Although is ugly on Safari. See known issues.
+- Uses native position sticky when available
+
+## Browser support
+
+Modern browsers, ie8+ are supported.
+
 ## Getting Started
 Download the [production version][min] or the [development version][max].
 
@@ -36,7 +58,8 @@ Passing options
     $('#left-banner').fixTo('#left-column', {
         className : 'my-class-name',
         zIndex: 10,
-        mind: '#header'
+        mind: '#header',
+        top: 20
     });
     
 Instantiate without jQuery:
@@ -85,9 +108,48 @@ Example
     
 Selector can be in any form that jQuery can handle. You can pass multiple elements.
 
+### top (Number)
+
+In pixels. Fixed element will preserve a gap on its top.
+
+### useNativeSticky (Boolean)
+Fixto will use native position sticky when supported by the browser. Set this option to `false` if you want to disable native position sticky.
+
+This option can not be overwritten after initialization. If you need to do so, you can destroy the instance and create a new one.
+
+While fixto can fix a container to any of its ancestors, native sticky will fix it to the nearest containing block, which is generally its parent. 
+
+There is no native way to know if the container is sticked, so it will not receive the passed class name. 
+
+Native sticky will perform very well as all the work is done by the browser. Without native sticky you will notice delayed response on IOS as all the javascript execuion is halted on scroll.
+
 ## Public Methods
 
 Following methods can be called directly on the instance or with jQuery.
+
+### refresh
+
+Fixto tries to adapt to the layout during scroll and window resize. In case the layout changes dynamically at any time, use refresh to force fixto to adapt. 
+
+    instance.refresh();
+    
+jQuery:
+    
+    $('#nav').fixTo('refresh');
+
+### setOptions(options)
+
+Resets the options. Fixto will refresh itself automatically after this method is used.
+
+    instance.setOptions({
+        top: 10
+    });
+    
+jQuery:
+    
+    $('#nav').fixTo('setOptions', {
+        top: 10
+    });
 
 ### destroy
 
@@ -119,18 +181,19 @@ jQuery:
 
     $('#nav').fixTo('start');
 
-## Features
-- Responsive
-- Handles multiple instances
-- Start, stop, destroy
-- Sensitive to viewport height
-- Handles positioning context created by transformed ancestors. Although is ugly on Safari. See known issues.
-
-## Browser support
-
-Modern browsers, ie8+ are supported. Touch devices are not supported.
-
 ## Known issues
 
 - Doesn't work on elements having `margin:auto`. You will need an additional wrapper around the element. This is because webkit differs from other browsers about reporting the computed margin values.
 - There is flickering on Safari when there is a transformed parent. Still couldn't resolve that.
+
+## Release notes
+### 0.3.0
+- Use native position sticky when supported.
+- Margin top of the fixed element will be ignored at fixed state, to be consistent with native sticky. This might break your existing layout if you used margin top on the target container with previous versions of fixto.
+- Top option added
+- useNativeSticky option added
+- setOptions method added
+- refresh method added
+
+### 0.2.0
+- Ancestors with css transform rules does not break the functionality anymore.

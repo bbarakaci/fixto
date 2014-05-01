@@ -298,13 +298,23 @@ var fixto = (function ($, window, document) {
 
     FixTo.prototype = {
         // Returns the total outerHeight of the elements passed to mind option. Will return 0 if none.
-        // TODO: Write without jquery
         _mindtop: function () {
             var top = 0;
             if(this._$mind) {
-                $(this._$mind).each(function () {
-                    top += $(this).outerHeight(true);
-                });
+                var el;
+                var rect;
+                var height;
+                for(var i=0, l=this._$mind.length; i<l; i++) {
+                    el = this._$mind[i];
+                    rect = el.getBoundingClientRect();
+                    if(rect.height) {
+                        top += rect.height;
+                    }
+                    else {
+                        var styles = computedStyle.getAll(el);
+                        top += el.offsetHeight + computedStyle.toFloat(styles.marginTop) + computedStyle.toFloat(styles.marginBottom);
+                    }
+                }
             }
             return top;
         },
@@ -597,11 +607,6 @@ var fixto = (function ($, window, document) {
 
     $.extend(NativeSticky.prototype, {
         _start: function() {
-            this._parentOriginalPosition = computedStyle.get(this.parent, 'position');
-            // TODO: How will it behave if parent is sticky?
-            if(this._parentOriginalPosition !== 'relative' && this._parentOriginalPosition !== 'absolute') {
-                this.parent.style.position = 'relative';
-            }
 
             var childStyles = computedStyle.getAll(this.child);
 
@@ -625,25 +630,22 @@ var fixto = (function ($, window, document) {
     
 
     var fixTo = function fixTo(childElement, parentElement, options) {
-        // Position sticky supported
-        if(nativeStickyValue) {
+        if(nativeStickyValue && options.useNativeSticky !== false) {
+            // Position sticky supported and user did not disabled the usage of it.
             return new NativeSticky(childElement, parentElement, options);
         }
-        // Position fixed supported
         else if(fixedPositionValue) {
+             // Position fixed supported
             return new FixToContainer(childElement, parentElement, options);
         }
-        // Grandpa?
         else {
-            return 'neither fixed nor sticky positioning supported';
+            return 'Neither fixed nor sticky positioning supported';
         }
-        
     };
 
     /*
-    No support for touch devices and ie lt 8
+    No support for ie lt 8
     */
-    //var touch = !!('ontouchstart' in window);
     
     if(ieversion<8){
         fixTo = function(){
