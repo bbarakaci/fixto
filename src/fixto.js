@@ -633,7 +633,7 @@ var fixto = (function ($, window, document) {
     
 
     var fixTo = function fixTo(childElement, parentElement, options) {
-        if(nativeStickyValue && options.useNativeSticky !== false) {
+        if((nativeStickyValue && !options) || (nativeStickyValue && options && options.useNativeSticky !== false)) {
             // Position sticky supported and user did not disabled the usage of it.
             return new NativeSticky(childElement, parentElement, options);
         }
