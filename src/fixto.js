@@ -152,8 +152,14 @@ var fixto = (function ($, window, document) {
         },
 
         _valueSupported: function(prop, value, dummy) {
-            dummy.style[prop] = value;
-            return dummy.style[prop] === value;
+            // IE8 will throw Illegal Argument when you attempt to set a not supported value.
+            try {
+                dummy.style[prop] = value;
+                return dummy.style[prop] === value;
+            }
+            catch(er) {
+                return false;
+            }            
         },
 
         /**
