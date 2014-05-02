@@ -99,15 +99,15 @@ Selector can be in any form that jQuery can handle. You can pass multiple elemen
 In pixels. Fixed element will preserve a gap on its top.
 
 ### useNativeSticky (Boolean)
-Fixto will use native position sticky when supported by the browser. Set this option to `false` if you want to disable native position sticky.
+Fixto will use native position sticky when supported by the browser. Set this option to `false` to disable.
 
 This option can not be overwritten after initialization. If you need to do so, you can destroy the instance and create a new one.
 
 While fixto can fix a container to any of its ancestors, native sticky will fix it to the nearest containing block, which is generally its parent. 
 
-There is no native way to know if the container is sticked, so it will not receive the passed class name. 
+There is no native way to know if the container is sticked, so it will not receive the css class name. 
 
-Native sticky will perform very well as all the work is done by the browser. Without native sticky you will notice delayed response on IOS as all the javascript execuion is halted on scroll.
+Native sticky will perform very well as all the work is done by the browser. Without native sticky you will notice delayed response and undesired effects on IOS as all the javascript execuion is halted on scroll. Setting `-webkit-transform: translate(0)` to parent container will eliminate undesired effect, delayed response will remain.
 
 ## Public Methods
 
@@ -175,6 +175,7 @@ jQuery:
 ## Release notes
 ### 0.3.0
 - Use native position sticky when supported.
+- Enabled for touch devices
 - Margin top of the fixed element will be ignored at fixed state, to be consistent with native sticky. This might break your existing layout if you used margin top on the target container with previous versions of fixto.
 - Top option added
 - useNativeSticky option added
