@@ -16,6 +16,7 @@ A jQuery plugin for sticky positioning. Fix containers to the viewport relative 
 - [Public Methods](#public-methods)
 - [Known issues](#known-issues)
 - [Release notes](#release-notes)
+- [Position sticky caveats](#position-sticky-caveats)
 
 ## Features
 - Responsive
@@ -68,7 +69,7 @@ Instantiate without jQuery:
 
 ## Styling
 
-When the container is fixed, it will receive the class name `fixto-fixed`. You may use this class or you may pass any other class name as an option.
+When the container is fixed, it will receive the class name `fixto-fixed`. You may use this class or you may pass any other class name as an option. This feature will not work when native postion sticky is used. See [known issues](#known-issues)
 
 ## Options
 
@@ -171,6 +172,9 @@ jQuery:
 
 - Doesn't work on elements having `margin:auto`. You will need an additional wrapper around the element. This is because webkit differs from other browsers about reporting the computed margin values.
 - There is flickering on Safari when there is a transformed parent and if native sticky positioning is not used. Still couldn't resolve that. Safari already supports native sticky positioning so you will observe this issue only if you disable native sticky support.
+- Some features are not implemented for the native position sticky version. Fixto normally does a lot of calculations during scroll. These calculations are not done when using native position sticky. Although it is possible to implement these features by doing same calculations, for now it is decided not to do so, for performance reasons and for the sake of obeying to the natural development of position sticky. Finally, one day, we will not need to use fixto anymore. 
+
+    Or we will choose the other path. We will decide to implement the features we need to have fixto as a plugin that does its own magic. Please open an issue if you would like to see additional features when running on native sticky mode. If there is an issue, just participate with your +1. It will help us to decide for the future.
 
 ## Release notes
 ### 0.3.0
@@ -186,3 +190,11 @@ jQuery:
 ### 0.2.0
 - Ancestors with css transform rules does not break the functionality anymore.
 - Needs to be used only during or after document ready
+
+## Position sticky caveats
+You might be wondering why position sticky does not work for your layout.
+
+Position sticky won’t work when:
+
+- the positioned element has an ancestor with an unintended overflow value of “auto”, “hidden” or “scroll”.
+- the positioned element has an ancestor with a computed height of zero, means, all the elements inside the container ran out of flow (floated or absolutely positioned) thus its height is 0. Clear properly if you have floated elements, but you can’t use overflow on the parent to clear, because of the rule above.
