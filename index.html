@@ -44,7 +44,6 @@
   #main {
     margin: 0 auto;
     max-width: 900px;
-    overflow: hidden;
   }
   header {
     border-bottom: 1px solid #333;
@@ -52,28 +51,29 @@
   }
   #content {
     background: #fff;
-    float: left;
     margin: 0;
+    margin-right: 30%;
     padding: 0;
-    width: 70%;
   }
   #content li {
     padding: 10px 30px 30px 10px;
     border-bottom: 1px solid #999;
-    overflow: hidden;
   }
   #content section {
-    float: left;
     margin: 20px 0;
-    width: 70%;
+    margin-left: 30%;
   }
   #content aside li {
     border: none;
   }
   #content aside {
     float: left;
-    margin-right: 10px;
     width: 25%;
+    padding-top: 20px;
+  }
+  #content aside h3 {
+    margin: 0;
+    margin-bottom: 16px;
   }
   .bar {
     background: #333; /* Old browsers */
@@ -85,10 +85,12 @@
     background: linear-gradient(to bottom, #4c4c4c 0%,#595959 12%,#666666 25%,#474747 39%,#2c2c2c 50%,#111111 60%,#000000 76%,#2b2b2b 91%,#131313 100%); /* W3C */
     padding: 10px 0;
     text-align: center;
+    clear: both;
   }
   nav {   
     float: right;
     width: 30%;
+    z-index: 2;
   }
   nav ul {
     background: #333;
@@ -102,19 +104,29 @@
       height : 170px;
       width:40px;
   }
+
+    a.action {
+      background-color: #ff7518;
+      padding:10px;
+      text-align:center;
+      display:block;
+      color:white;
+    }
   
   @media only screen and (max-width: 480px), only screen and (max-device-width: 480px) {
+    #content {
+      margin-right: auto;
+    }
+
     #content,
     #content section,
-    #content aside,
     nav {
       float: none;
     }
     #content,
     #content section,
-    #content aside,
     nav {
-      width: 100%;
+      width: auto;
     }
     nav ul {
       margin: 0 auto;
@@ -129,6 +141,11 @@
     nav li:last-child {
       border-right: 0;
     }
+    #content aside {
+      padding-top: 70px;
+    }
+
+
   }
   </style>
 
@@ -151,8 +168,8 @@
         <li><a href="#section4">Sit</a></li>
         <li><a href="#section5">Amet</a></li>
       </ul>
-      <a href="https://github.com/bbarakaci/fixto"><img style="position: fixed; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>
-      <a href="https://github.com/bbarakaci/fixto" style="margin:10px;text-align:center;display:block;color:black">Check it on Github!</a>
+      
+      <a href="https://github.com/bbarakaci/fixto" class="action">Check it on Github</a>
     </nav>
     <ul id="content">
       <li id="section1" class="section-row">
