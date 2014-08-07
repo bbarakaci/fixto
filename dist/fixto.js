@@ -1,4 +1,4 @@
-/*! fixto - v0.3.0 - 2014-05-03
+/*! fixto - v0.3.1 - 2014-08-07
 * http://github.com/bbarakaci/fixto/*/
 
 
@@ -544,9 +544,11 @@ var fixto = (function ($, window, document) {
                 }
             }
             
+            this._replacer.replace();
+            
             childStyle.left = (left - computedStyle.toFloat(childStyles.marginLeft)) + 'px';
             childStyle.width = width;
-            this._replacer.replace();
+
             childStyle.position = 'fixed';
             childStyle.top = this._mindtop() + this.options.top - computedStyle.toFloat(childStyles.marginTop) + 'px';
             this._$child.addClass(this.options.className);

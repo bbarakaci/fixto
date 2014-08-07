@@ -177,6 +177,9 @@ jQuery:
     Or we will choose the other path. We will decide to implement the features we need to have fixto as a plugin that does its own magic. Please open an issue if you would like to see additional features when running on native sticky mode. If there is an issue, just participate with your +1. It will help us to decide for the future.
 
 ## Release notes
+### 0.3.1
+- Bugfix #15
+
 ### 0.3.0
 - Use native position sticky when supported.
 - Enabled for touch devices
