@@ -541,9 +541,11 @@ var fixto = (function ($, window, document) {
                 }
             }
             
+            this._replacer.replace();
+            
             childStyle.left = (left - computedStyle.toFloat(childStyles.marginLeft)) + 'px';
             childStyle.width = width;
-            this._replacer.replace();
+
             childStyle.position = 'fixed';
             childStyle.top = this._mindtop() + this.options.top - computedStyle.toFloat(childStyles.marginTop) + 'px';
             this._$child.addClass(this.options.className);
