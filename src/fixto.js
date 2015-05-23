@@ -62,7 +62,7 @@ var fixto = (function ($, window, document) {
                  rst.width = this._width();
                  rst.height = this._height();
 
-                 // Adobt margins
+                 // Adopt margins
                  rst.marginTop = styles.marginTop;
                  rst.marginBottom = styles.marginBottom;
                  rst.marginLeft = styles.marginLeft;
