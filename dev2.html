@@ -6,34 +6,41 @@
 	<script src="libs/jquery/jquery.js" type="text/javascript" charset="utf-8"></script>
     <script src="src/fixto.js" type="text/javascript" charset="utf-8"></script>
 	<style>
-	body {
-	    padding:20px;
-	    font: 14px/21px "Trebuchet MS", Helvetica, Verdana, sans-serif;
-	   
-	}
-	    .csticky-holder {
-/*            transform: translate(0);
-            -webkit-transform: translate(0);*/
-	    }
-	    .csticky, .absolute {
-	        background: #97CE68;
-	        padding: 20px 30px;
-	    }
-	    .fl {
-	        float:left;
-	    }
-	    ul {
-	        list-style-type:none;
-	        margin:0 auto;
-	        max-width: 800px;
-	        padding:0;
-	    }
-	    li{
-	        background: #EFEFEF;
-	        padding: 20px 30px;
-	        margin-bottom: 20px;	        
-	    }
-	</style>
+        body {
+            padding: 20px;
+            font: 14px/21px "Trebuchet MS", Helvetica, Verdana, sans-serif;
+
+        }
+
+        .csticky-holder {
+            /*            transform: translate(0);
+                        -webkit-transform: translate(0);*/
+        }
+
+        .csticky,
+        .absolute,
+        .csticky-do-not-mind-bottom-padding {
+            background: #97CE68;
+            padding: 20px 30px;
+        }
+
+        .fl {
+            float: left;
+        }
+
+        ul {
+            list-style-type: none;
+            margin: 0 auto;
+            max-width: 800px;
+            padding: 0;
+        }
+
+        li {
+            background: #EFEFEF;
+            padding: 20px 30px;
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
 <body>
         <ul class="cstickies" >
@@ -41,7 +48,7 @@
                 <div class="csticky">
                     Sticky
                 </div>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce nulla ligula, egestas sit amet malesuada vel, iaculis at mi. Donec vestibulum nunc at neque pretium et egestas erat scelerisque. Pellentesque hendrerit egestas eros, non mattis arcu viverra vitae. Praesent tincidunt magna at urna ultrices consequat. Phasellus cursus rutrum lectus non dapibus. Curabitur lorem lorem, blandit vitae vehicula eget, sagittis vitae dolor. Integer sed ipsum sed elit facilisis commodo quis a urna. Mauris scelerisque nibh in metus tempor tristique. Fusce commodo sagittis ultrices. Pellentesque sit amet fermentum orci. Maecenas sollicitudin arcu non felis mollis ac laoreet augue mattis. Morbi condimentum turpis eu ipsum dapibus et euismod risus dapibus. Mauris mauris nisl, rutrum eu ultrices vel, cursus at massa. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>                
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce nulla ligula, egestas sit amet malesuada vel, iaculis at mi. Donec vestibulum nunc at neque pretium et egestas erat scelerisque. Pellentesque hendrerit egestas eros, non mattis arcu viverra vitae. Praesent tincidunt magna at urna ultrices consequat. Phasellus cursus rutrum lectus non dapibus. Curabitur lorem lorem, blandit vitae vehicula eget, sagittis vitae dolor. Integer sed ipsum sed elit facilisis commodo quis a urna. Mauris scelerisque nibh in metus tempor tristique. Fusce commodo sagittis ultrices. Pellentesque sit amet fermentum orci. Maecenas sollicitudin arcu non felis mollis ac laoreet augue mattis. Morbi condimentum turpis eu ipsum dapibus et euismod risus dapibus. Mauris mauris nisl, rutrum eu ultrices vel, cursus at massa. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
 
             </li>
             <li class="csticky-holder">
@@ -63,7 +70,7 @@
                     </div>
 
 
-                
+
                 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce nulla ligula, egestas sit amet malesuada vel, iaculis at mi. Donec vestibulum nunc at neque pretium et egestas erat scelerisque. Pellentesque hendrerit egestas eros, non mattis arcu viverra vitae. Praesent tincidunt magna at urna ultrices consequat. Phasellus cursus rutrum lectus non dapibus. Curabitur lorem lorem, blandit vitae vehicula eget, sagittis vitae dolor. Integer sed ipsum sed elit facilisis commodo quis a urna. Mauris scelerisque nibh in metus tempor tristique. Fusce commodo sagittis ultrices. Pellentesque sit amet fermentum orci. Maecenas sollicitudin arcu non felis mollis ac laoreet augue mattis. Morbi condimentum turpis eu ipsum dapibus et euismod risus dapibus. Mauris mauris nisl, rutrum eu ultrices vel, cursus at massa. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
 
             </li>
@@ -83,14 +90,21 @@
                     </div>
 
                 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce nulla ligula, egestas sit amet malesuada vel, iaculis at mi. Donec vestibulum nunc at neque pretium et egestas erat scelerisque. Pellentesque hendrerit egestas eros, non mattis arcu viverra vitae. Praesent tincidunt magna at urna ultrices consequat. Phasellus cursus rutrum lectus non dapibus. Curabitur lorem lorem, blandit vitae vehicula eget, sagittis vitae dolor. Integer sed ipsum sed elit facilisis commodo quis a urna. Mauris scelerisque nibh in metus tempor tristique. Fusce commodo sagittis ultrices. Pellentesque sit amet fermentum orci. Maecenas sollicitudin arcu non felis mollis ac laoreet augue mattis. Morbi condimentum turpis eu ipsum dapibus et euismod risus dapibus. Mauris mauris nisl, rutrum eu ultrices vel, cursus at massa. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            </li>
+            <li class="csticky-holder-do-not-mind-bottom-padding">
 
+                    <div class="csticky-do-not-mind-bottom-padding">
+                        Parent's bottom padding is not respected due to disabled "mindBottomPadding" option
+                    </div>
+
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce nulla ligula, egestas sit amet malesuada vel, iaculis at mi. Donec vestibulum nunc at neque pretium et egestas erat scelerisque. Pellentesque hendrerit egestas eros, non mattis arcu viverra vitae. Praesent tincidunt magna at urna ultrices consequat. Phasellus cursus rutrum lectus non dapibus. Curabitur lorem lorem, blandit vitae vehicula eget, sagittis vitae dolor. Integer sed ipsum sed elit facilisis commodo quis a urna. Mauris scelerisque nibh in metus tempor tristique. Fusce commodo sagittis ultrices. Pellentesque sit amet fermentum orci. Maecenas sollicitudin arcu non felis mollis ac laoreet augue mattis. Morbi condimentum turpis eu ipsum dapibus et euismod risus dapibus. Mauris mauris nisl, rutrum eu ultrices vel, cursus at massa. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
             </li>
         </ul>
 
         <!-- <div class="absolute" style="position:absolute;top:20px;right:20px">
              Absolute Sticky
          </div> -->
-    <div style="height:700px"></div>
+    <div style="height:1000px"></div>
 
 
 
@@ -102,6 +116,11 @@
     $('.csticky').fixTo('.csticky-holder', {top: 0, useNativeSticky:true});
     // $('.absolute').fixTo('body');
 
+    $('.csticky-do-not-mind-bottom-padding').fixTo('.csticky-holder-do-not-mind-bottom-padding', {
+        top: 0,
+        mindBottomPadding: false,
+        useNativeSticky: false
+    });
 
 </script>
 </body>

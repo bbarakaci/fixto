@@ -428,7 +428,12 @@ var fixto = (function ($, window, document) {
 
         _onscroll: function _onscroll() {
             this._scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-            this._parentBottom = (this.parent.offsetHeight + this._fullOffset('offsetTop', this.parent)) - computedStyle.getFloat(this.parent, 'paddingBottom');
+            this._parentBottom = (this.parent.offsetHeight + this._fullOffset('offsetTop', this.parent));
+
+            if (this.options.mindBottomPadding !== false) {
+                this._parentBottom -= computedStyle.getFloat(this.parent, 'paddingBottom');
+            }
+
             if (!this.fixed) {
 
                 var childStyles = computedStyle.getAll(this.child);

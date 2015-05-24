@@ -110,6 +110,9 @@ There is no native way to know if the container is sticked, so it will not recei
 
 Native sticky will perform very well as all the work is done by the browser. Without native sticky you will notice delayed response and undesired effects on IOS as all the javascript execuion is halted on scroll. Setting `-webkit-transform: translate(0)` to parent container will eliminate undesired effect, delayed response will remain.
 
+### mindBottomPadding (Boolean)
+Allows for scrolling through the parent's bottom padding. Defaults to `true`, making fixed element stop when parent's bottom padding is reached. Won't work with native "sticky" implementation. 
+
 ## Public Methods
 
 Following methods can be called directly on the instance or with jQuery.
@@ -177,6 +180,9 @@ jQuery:
     Or we will choose the other path. We will decide to implement the features we need to have fixto as a plugin that does its own magic. Please open an issue if you would like to see additional features when running on native sticky mode. If there is an issue, just participate with your +1. It will help us to decide for the future.
 
 ## Release notes
+### 0.4.0
+- Added "mindBottomPadding" option, to make including parent's bottom padding optional when calculating max bottom position of the fixed element 
+
 ### 0.3.1
 - Bugfix #15
 
