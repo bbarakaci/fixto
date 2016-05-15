@@ -18,8 +18,8 @@
         }
 
         .csticky,
-        .absolute,
-        .csticky-do-not-mind-bottom-padding {
+        .csticky-do-not-mind-bottom-padding,
+        .csticky-viewport {
             background: #97CE68;
             padding: 20px 30px;
         }
@@ -83,10 +83,10 @@
                 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce nulla ligula, egestas sit amet malesuada vel, iaculis at mi. Donec vestibulum nunc at neque pretium et egestas erat scelerisque. Pellentesque hendrerit egestas eros, non mattis arcu viverra vitae. Praesent tincidunt magna at urna ultrices consequat. Phasellus cursus rutrum lectus non dapibus. Curabitur lorem lorem, blandit vitae vehicula eget, sagittis vitae dolor. Integer sed ipsum sed elit facilisis commodo quis a urna. Mauris scelerisque nibh in metus tempor tristique. Fusce commodo sagittis ultrices. Pellentesque sit amet fermentum orci. Maecenas sollicitudin arcu non felis mollis ac laoreet augue mattis. Morbi condimentum turpis eu ipsum dapibus et euismod risus dapibus. Mauris mauris nisl, rutrum eu ultrices vel, cursus at massa. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
 
             </li>
-            <li class="csticky-holder">
+            <li class="csticky-viewport-holder">
 
-                    <div class="csticky" style="height:400px">
-                        Sticky is tall. It will not be fixed if viewport is shorter.
+                    <div class="csticky-viewport" style="height:400px">
+                        Sticky is tall. It will not be fixed if viewport is shorter, when mindViewport option set to true. (Only if native position sticky is disabled.)
                     </div>
 
                 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce nulla ligula, egestas sit amet malesuada vel, iaculis at mi. Donec vestibulum nunc at neque pretium et egestas erat scelerisque. Pellentesque hendrerit egestas eros, non mattis arcu viverra vitae. Praesent tincidunt magna at urna ultrices consequat. Phasellus cursus rutrum lectus non dapibus. Curabitur lorem lorem, blandit vitae vehicula eget, sagittis vitae dolor. Integer sed ipsum sed elit facilisis commodo quis a urna. Mauris scelerisque nibh in metus tempor tristique. Fusce commodo sagittis ultrices. Pellentesque sit amet fermentum orci. Maecenas sollicitudin arcu non felis mollis ac laoreet augue mattis. Morbi condimentum turpis eu ipsum dapibus et euismod risus dapibus. Mauris mauris nisl, rutrum eu ultrices vel, cursus at massa. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
@@ -94,27 +94,22 @@
             <li class="csticky-holder-do-not-mind-bottom-padding">
 
                     <div class="csticky-do-not-mind-bottom-padding">
-                        Parent's bottom padding is not respected due to disabled "mindBottomPadding" option
+                        Parent's bottom padding is not respected due to disabled "mindBottomPadding" option. (Only if native position sticky is disabled.)
                     </div>
 
                 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce nulla ligula, egestas sit amet malesuada vel, iaculis at mi. Donec vestibulum nunc at neque pretium et egestas erat scelerisque. Pellentesque hendrerit egestas eros, non mattis arcu viverra vitae. Praesent tincidunt magna at urna ultrices consequat. Phasellus cursus rutrum lectus non dapibus. Curabitur lorem lorem, blandit vitae vehicula eget, sagittis vitae dolor. Integer sed ipsum sed elit facilisis commodo quis a urna. Mauris scelerisque nibh in metus tempor tristique. Fusce commodo sagittis ultrices. Pellentesque sit amet fermentum orci. Maecenas sollicitudin arcu non felis mollis ac laoreet augue mattis. Morbi condimentum turpis eu ipsum dapibus et euismod risus dapibus. Mauris mauris nisl, rutrum eu ultrices vel, cursus at massa. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
             </li>
         </ul>
 
-        <!-- <div class="absolute" style="position:absolute;top:20px;right:20px">
-             Absolute Sticky
-         </div> -->
     <div style="height:1000px"></div>
 
-
-
-
 <script>
-
-
-    // $('.csticky').first().fixTo('.csticky-holder').first();
     $('.csticky').fixTo('.csticky-holder', {top: 0, useNativeSticky:true});
-    // $('.absolute').fixTo('body');
+
+    $('.csticky-viewport').fixTo('.csticky-viewport-holder', {
+        mindViewport: true,
+        useNativeSticky: false
+    });
 
     $('.csticky-do-not-mind-bottom-padding').fixTo('.csticky-holder-do-not-mind-bottom-padding', {
         top: 0,

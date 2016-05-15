@@ -113,6 +113,9 @@ Native sticky will perform very well as all the work is done by the browser. Wit
 ### mindBottomPadding (Boolean)
 Allows for scrolling through the parent's bottom padding. Defaults to `true`, making fixed element stop when parent's bottom padding is reached. Won't work with native "sticky" implementation. 
 
+### mindViewport (Boolean)
+If set to true, the viewport height will be taken into consideration. If viewport height is shorter than the sticky element, it will not stick not to render any content inaccesible. This option won't work with native position sticky.
+
 ## Public Methods
 
 Following methods can be called directly on the instance or with jQuery.
