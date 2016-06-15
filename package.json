@@ -1,0 +1,19 @@
+{
+  "name": "fixto",
+  "version": "0.4.0",
+  "description": "A jQuery plugin for custom sticky positioning",
+  "main": "dist/fixto.min.js",
+  "devDependencies": {
+    "grunt": "^0.3.17"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bbarakaci/fixto.git"
+  },
+  "keywords": [
+    "sticky"
+  ],
+  "author": "Burak Barakaci <barakaci@gmail.com>",
+  "license": "",
+  "homepage": "https://github.com/bbarakaci/fixto"
+}
