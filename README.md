@@ -183,6 +183,10 @@ jQuery:
     Or we will choose the other path. We will decide to implement the features we need to have fixto as a plugin that does its own magic. Please open an issue if you would like to see additional features when running on native sticky mode. If there is an issue, just participate with your +1. It will help us to decide for the future.
 
 ## Release notes
+### 0.5.0
+- Sensitivity to the viewport is now an optional feature.
+- Added MIT license. 
+
 ### 0.4.0
 - Added "mindBottomPadding" option, to make including parent's bottom padding optional when calculating max bottom position of the fixed element 
 
