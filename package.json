@@ -4,7 +4,11 @@
   "description": "A jQuery plugin for custom sticky positioning",
   "main": "dist/fixto.min.js",
   "devDependencies": {
-    "grunt": "^0.3.17"
+    "chromedriver": "^2.21.2",
+    "grunt": "^0.3.17",
+    "http-server": "^0.9.0",
+    "mocha": "^2.5.3",
+    "selenium-webdriver": "^2.53.2"
   },
   "repository": {
     "type": "git",
@@ -15,5 +19,9 @@
   ],
   "author": "Burak Barakaci <barakaci@gmail.com>",
   "license": "MIT",
-  "homepage": "https://github.com/bbarakaci/fixto"
+  "homepage": "https://github.com/bbarakaci/fixto",
+  "scripts": {
+    "start": "http-server",
+    "test": "mocha tests/basic.js"
+  }
 }

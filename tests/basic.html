@@ -1,0 +1,50 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Basic functionality</title>
+
+
+  <style>
+
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        height: 10000px;
+    }
+
+    .parent {
+        height: 200px;
+        background-color: yellow;
+    }
+
+    .child {
+        height: 50px;
+        background-color: green;
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+
+    <div class="parent">
+        <div class="child"></div>
+    </div>
+
+
+    <script src="../libs/jquery/jquery.js"></script>
+    <script src="../src/fixto.js"></script>
+    <script>
+
+        $('.child').fixTo('.parent');
+
+    </script>
+</body>
+</html>

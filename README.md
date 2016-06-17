@@ -17,6 +17,7 @@ A jQuery plugin for sticky positioning. Fix containers to the viewport relative 
 - [Known issues](#known-issues)
 - [Release notes](#release-notes)
 - [Position sticky caveats](#position-sticky-caveats)
+- [Development](#development)
 
 ## Features
 - Responsive
@@ -214,3 +215,15 @@ Position sticky won’t work when:
 
 - the positioned element has an ancestor with an unintended overflow value of “auto”, “hidden” or “scroll”.
 - the positioned element has an ancestor with a computed height of zero, means, all the elements inside the container ran out of flow (floated or absolutely positioned) thus its height is 0. Clear properly if you have floated elements, but you can’t use overflow on the parent to clear, because of the rule above.
+
+## Development
+
+### Run server
+    npm start
+
+### Tests
+Make sure server is running and execute:
+    
+    npm test
+
+
