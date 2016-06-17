@@ -66,5 +66,14 @@ test.describe('Fixto', function () {
             assert(rect.bottom).equals(25);
         });
     });
+
+    test.it('should be responsive', function () {
+        driver.get(path + 'basic.html');
+        helper.scroll(100);
+        driver.manage().window().setSize(400, 400);
+        helper.getRect().then(function(rect) {
+            assert(rect.width).equals(400);
+        });
+    });
 });
 
