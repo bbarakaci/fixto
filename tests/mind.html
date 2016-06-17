@@ -1,0 +1,63 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Mind functionality</title>
+
+
+  <style>
+
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        height: 10000px;
+    }
+
+    .parent {
+        height: 200px;
+        background-color: yellow;
+        margin-top: 100px;
+    }
+
+    .child {
+        height: 50px;
+        background-color: green;
+    }
+
+    .header {
+        height: 100px;
+        background-color: red;
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 1;
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+    <div class="header">
+
+    </div>
+
+    <div class="parent">
+        <div class="child"></div>
+    </div>
+
+
+    <script src="../libs/jquery/jquery.js"></script>
+    <script src="../src/fixto.js"></script>
+    <script>
+
+        $('.child').fixTo('.parent', {mind:'.header'});
+
+    </script>
+</body>
+</html>

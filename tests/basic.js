@@ -75,5 +75,21 @@ test.describe('Fixto', function () {
             assert(rect.width).equals(400);
         });
     });
+
+    test.it('should mind', function () {
+        driver.get(path + 'mind.html');
+        helper.scroll(100);
+        helper.getRect().then(function(rect) {
+            assert(rect.top).equals(100);
+        });
+    });
+
+    test.it('should adjust with mind', function () {
+        driver.get(path + 'mind.html');
+        helper.scroll(175);
+        helper.getRect().then(function(rect) {
+            assert(rect.top).equals(75);
+        });
+    });
 });
 
