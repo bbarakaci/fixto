@@ -17,6 +17,8 @@ var helper = {
         driver.executeScript('window.scrollTo(0, '+value+')');
     },
     getRect: function() {
+        // TODO: Something is not ok, sometimes tests fail randomly.
+        driver.sleep(20);
         return driver.executeAsyncScript(function(callback) {
             setTimeout(function() {
                 callback(document.querySelector(".child").getBoundingClientRect());

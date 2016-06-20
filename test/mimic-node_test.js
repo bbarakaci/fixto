@@ -25,7 +25,7 @@
   module('mimicnode', {
     setup: function() {
         this.target = $('#target')[0];
-        this.md = new window.fixto.mimicNode.MimicNode(this.target);
+        this.md = new window.fixto.MimicNode(this.target);
     }
   });
 

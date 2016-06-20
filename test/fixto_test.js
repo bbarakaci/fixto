@@ -34,7 +34,7 @@
     var instance = this.instance;
     equal(instance.child, this.child, 'correct child');
     equal(instance.parent, this.parent, 'correct parent');
-    ok(instance._replacer instanceof window.fixto.mimicNode.MimicNode, 'replacer instance of mimic node');
+    ok(instance._replacer instanceof window.fixto.MimicNode, 'replacer instance of mimic node');
     equal(instance.options.className, 'fixto-fixed', 'default class name');
     equal(instance._ghostNode, instance._replacer.replacer);
     equal(instance._toresize, window || document.documentElement, 'element to resize set');
@@ -125,7 +125,7 @@
     ok(module.FixToContainer);
     ok(module.fixTo);
     ok(module.computedStyle);
-    ok(module.mimicNode);
+    ok(module.MimicNode);
     ok($.fn.fixTo, 'jQuery plugin defined');
   });
 

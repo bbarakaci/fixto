@@ -1,253 +1,16 @@
-/*! fixto - v0.5.0 - 2016-06-16
-* http://github.com/bbarakaci/fixto/*/
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+/*! Computed Style - v0.1.1 - 2016-06-18
+* https://github.com/bbarakaci/computed-style
+* Copyright (c) 2012 Burak Barakaci; Licensed MIT */
+window.computedStyle=function(){var e={getAll:function(e){return document.defaultView.getComputedStyle(e)},get:function(e,t){return this.getAll(e)[t]},toFloat:function(e){return parseFloat(e,10)||0},getFloat:function(e,t){return this.toFloat(this.get(e,t))},_getAllCurrentStyle:function(e){return e.currentStyle}};return document.documentElement.currentStyle&&(e.getAll=e._getAllCurrentStyle),e}();
+},{}],2:[function(require,module,exports){
+/*global require, module */
+require('computed-style');
+var computedStyle = window.computedStyle;
+var MimicNode = require('./mimic-node');
+var Prefix = require('./prefix');
 
-
-var fixto = (function ($, window, document) {
-
-    // Start Computed Style. Please do not modify this module here. Modify it from its own repo. See address below.
-
-    /*! Computed Style - v0.1.0 - 2012-07-19
-    * https://github.com/bbarakaci/computed-style
-    * Copyright (c) 2012 Burak Barakaci; Licensed MIT */
-    var computedStyle = (function() {
-        var computedStyle = {
-            getAll : function(element){
-                return document.defaultView.getComputedStyle(element);
-            },
-            get : function(element, name){
-                return this.getAll(element)[name];
-            },
-            toFloat : function(value){
-                return parseFloat(value, 10) || 0;
-            },
-            getFloat : function(element,name){
-                return this.toFloat(this.get(element, name));
-            },
-            _getAllCurrentStyle : function(element) {
-                return element.currentStyle;
-            }
-        };
-
-        if (document.documentElement.currentStyle) {
-            computedStyle.getAll = computedStyle._getAllCurrentStyle;
-        }
-
-        return computedStyle;
-
-    }());
-
-    // End Computed Style. Modify whatever you want to.
-
-    var mimicNode = (function(){
-        /*
-        Class Mimic Node
-        Dependency : Computed Style
-        Tries to mimick a dom node taking his styles, dimensions. May go to his repo if gets mature.
-        */
-
-        function MimicNode(element) {
-            this.element = element;
-            this.replacer = document.createElement('div');
-            this.replacer.style.visibility = 'hidden';
-            this.hide();
-            element.parentNode.insertBefore(this.replacer, element);
-        }
-
-        MimicNode.prototype = {
-            replace : function(){
-                var rst = this.replacer.style;
-                var styles = computedStyle.getAll(this.element);
-
-                 // rst.width = computedStyle.width(this.element) + 'px';
-                 // rst.height = this.element.offsetHeight + 'px';
-
-                 // Setting offsetWidth
-                 rst.width = this._width();
-                 rst.height = this._height();
-
-                 // Adopt margins
-                 rst.marginTop = styles.marginTop;
-                 rst.marginBottom = styles.marginBottom;
-                 rst.marginLeft = styles.marginLeft;
-                 rst.marginRight = styles.marginRight;
-
-                 // Adopt positioning
-                 rst.cssFloat = styles.cssFloat;
-                 rst.styleFloat = styles.styleFloat; //ie8;
-                 rst.position = styles.position;
-                 rst.top = styles.top;
-                 rst.right = styles.right;
-                 rst.bottom = styles.bottom;
-                 rst.left = styles.left;
-                 // rst.borderStyle = styles.borderStyle;
-
-                 rst.display = styles.display;
-
-            },
-
-            hide: function () {
-                this.replacer.style.display = 'none';
-            },
-
-            _width : function(){
-                return this.element.getBoundingClientRect().width + 'px';
-            },
-
-            _widthOffset : function(){
-                return this.element.offsetWidth + 'px';
-            },
-
-            _height : function(){
-                return this.element.getBoundingClientRect().height + 'px';
-            },
-
-            _heightOffset : function(){
-                return this.element.offsetHeight + 'px';
-            },
-
-            destroy: function () {
-                $(this.replacer).remove();
-
-                // set properties to null to break references
-                for (var prop in this) {
-                    if (this.hasOwnProperty(prop)) {
-                      this[prop] = null;
-                    }
-                }
-            }
-        };
-
-        var bcr = document.documentElement.getBoundingClientRect();
-        if(!bcr.width){
-            MimicNode.prototype._width = MimicNode.prototype._widthOffset;
-            MimicNode.prototype._height = MimicNode.prototype._heightOffset;
-        }
-
-        return {
-            MimicNode:MimicNode,
-            computedStyle:computedStyle
-        };
-    }());
-
-    // Class handles vendor prefixes
-    function Prefix() {
-        // Cached vendor will be stored when it is detected
-        this._vendor = null;
-
-        //this._dummy = document.createElement('div');
-    }
-
-    Prefix.prototype = {
-
-        _vendors: {
-          webkit: { cssPrefix: '-webkit-', jsPrefix: 'Webkit'},
-          moz: { cssPrefix: '-moz-', jsPrefix: 'Moz'},
-          ms: { cssPrefix: '-ms-', jsPrefix: 'ms'},
-          opera: { cssPrefix: '-o-', jsPrefix: 'O'}
-        },
-
-        _prefixJsProperty: function(vendor, prop) {
-            return vendor.jsPrefix + prop[0].toUpperCase() + prop.substr(1);
-        },
-
-        _prefixValue: function(vendor, value) {
-            return vendor.cssPrefix + value;
-        },
-
-        _valueSupported: function(prop, value, dummy) {
-            // IE8 will throw Illegal Argument when you attempt to set a not supported value.
-            try {
-                dummy.style[prop] = value;
-                return dummy.style[prop] === value;
-            }
-            catch(er) {
-                return false;
-            }
-        },
-
-        /**
-         * Returns true if the property is supported
-         * @param {string} prop Property name
-         * @returns {boolean}
-         */
-        propertySupported: function(prop) {
-            // Supported property will return either inine style value or an empty string.
-            // Undefined means property is not supported.
-            return document.documentElement.style[prop] !== undefined;
-        },
-
-        /**
-         * Returns prefixed property name for js usage
-         * @param {string} prop Property name
-         * @returns {string|null}
-         */
-        getJsProperty: function(prop) {
-            // Try native property name first.
-            if(this.propertySupported(prop)) {
-                return prop;
-            }
-
-            // Prefix it if we know the vendor already
-            if(this._vendor) {
-                return this._prefixJsProperty(this._vendor, prop);
-            }
-
-            // We don't know the vendor, try all the possibilities
-            var prefixed;
-            for(var vendor in this._vendors) {
-                prefixed = this._prefixJsProperty(this._vendors[vendor], prop);
-                if(this.propertySupported(prefixed)) {
-                    // Vendor detected. Cache it.
-                    this._vendor = this._vendors[vendor];
-                    return prefixed;
-                }
-            }
-
-            // Nothing worked
-            return null;
-        },
-
-        /**
-         * Returns supported css value for css property. Could be used to check support or get prefixed value string.
-         * @param {string} prop Property
-         * @param {string} value Value name
-         * @returns {string|null}
-         */
-        getCssValue: function(prop, value) {
-            // Create dummy element to test value
-            var dummy = document.createElement('div');
-
-            // Get supported property name
-            var jsProperty = this.getJsProperty(prop);
-
-            // Try unprefixed value
-            if(this._valueSupported(jsProperty, value, dummy)) {
-                return value;
-            }
-
-            var prefixedValue;
-
-            // If we know the vendor already try prefixed value
-            if(this._vendor) {
-                prefixedValue = this._prefixValue(this._vendor, value);
-                if(this._valueSupported(jsProperty, prefixedValue, dummy)) {
-                    return prefixedValue;
-                }
-            }
-
-            // Try all vendors
-            for(var vendor in this._vendors) {
-                prefixedValue = this._prefixValue(this._vendors[vendor], value);
-                if(this._valueSupported(jsProperty, prefixedValue, dummy)) {
-                    // Vendor detected. Cache it.
-                    this._vendor = this._vendors[vendor];
-                    return prefixedValue;
-                }
-            }
-            // No support for value
-            return null;
-        }
-    };
+window.fixto = (function ($, window, document) {
 
     var prefix = new Prefix();
 
@@ -402,7 +165,7 @@ var fixto = (function ($, window, document) {
     // Class FixToContainer
     function FixToContainer(child, parent, options) {
         FixTo.call(this, child, parent, options);
-        this._replacer = new mimicNode.MimicNode(child);
+        this._replacer = new MimicNode(child);
         this._ghostNode = this._replacer.replacer;
 
         this._saveStyles();
@@ -717,8 +480,218 @@ var fixto = (function ($, window, document) {
         FixToContainer: FixToContainer,
         fixTo: fixTo,
         computedStyle:computedStyle,
-        mimicNode:mimicNode
+        MimicNode: MimicNode
     };
 
 
 }(window.jQuery, window, document));
+},{"./mimic-node":3,"./prefix":4,"computed-style":1}],3:[function(require,module,exports){
+/*global require, module */
+/*global $ */
+require('computed-style');
+var computedStyle = window.computedStyle;
+
+function MimicNode(element) {
+    this.element = element;
+    this.replacer = document.createElement('div');
+    this.replacer.style.visibility = 'hidden';
+    this.hide();
+    element.parentNode.insertBefore(this.replacer, element);
+}
+
+MimicNode.prototype = {
+    replace : function(){
+        var rst = this.replacer.style;
+        var styles = computedStyle.getAll(this.element);
+
+         // rst.width = computedStyle.width(this.element) + 'px';
+         // rst.height = this.element.offsetHeight + 'px';
+
+         // Setting offsetWidth
+         rst.width = this._width();
+         rst.height = this._height();
+
+         // Adopt margins
+         rst.marginTop = styles.marginTop;
+         rst.marginBottom = styles.marginBottom;
+         rst.marginLeft = styles.marginLeft;
+         rst.marginRight = styles.marginRight;
+
+         // Adopt positioning
+         rst.cssFloat = styles.cssFloat;
+         rst.styleFloat = styles.styleFloat; //ie8;
+         rst.position = styles.position;
+         rst.top = styles.top;
+         rst.right = styles.right;
+         rst.bottom = styles.bottom;
+         rst.left = styles.left;
+         // rst.borderStyle = styles.borderStyle;
+
+         rst.display = styles.display;
+
+    },
+
+    hide: function () {
+        this.replacer.style.display = 'none';
+    },
+
+    _width : function(){
+        return this.element.getBoundingClientRect().width + 'px';
+    },
+
+    _widthOffset : function(){
+        return this.element.offsetWidth + 'px';
+    },
+
+    _height : function(){
+        return this.element.getBoundingClientRect().height + 'px';
+    },
+
+    _heightOffset : function(){
+        return this.element.offsetHeight + 'px';
+    },
+
+    destroy: function () {
+        $(this.replacer).remove();
+
+        // set properties to null to break references
+        for (var prop in this) {
+            if (this.hasOwnProperty(prop)) {
+              this[prop] = null;
+            }
+        }
+    }
+};
+
+var bcr = document.documentElement.getBoundingClientRect();
+if(!bcr.width){
+    MimicNode.prototype._width = MimicNode.prototype._widthOffset;
+    MimicNode.prototype._height = MimicNode.prototype._heightOffset;
+}
+
+module.exports = MimicNode;
+},{"computed-style":1}],4:[function(require,module,exports){
+/*global require, module */
+
+// Class handles vendor prefixes
+function Prefix() {
+    // Cached vendor will be stored when it is detected
+    this._vendor = null;
+
+    //this._dummy = document.createElement('div');
+}
+
+Prefix.prototype = {
+
+    _vendors: {
+      webkit: { cssPrefix: '-webkit-', jsPrefix: 'Webkit'},
+      moz: { cssPrefix: '-moz-', jsPrefix: 'Moz'},
+      ms: { cssPrefix: '-ms-', jsPrefix: 'ms'},
+      opera: { cssPrefix: '-o-', jsPrefix: 'O'}
+    },
+
+    _prefixJsProperty: function(vendor, prop) {
+        return vendor.jsPrefix + prop[0].toUpperCase() + prop.substr(1);
+    },
+
+    _prefixValue: function(vendor, value) {
+        return vendor.cssPrefix + value;
+    },
+
+    _valueSupported: function(prop, value, dummy) {
+        // IE8 will throw Illegal Argument when you attempt to set a not supported value.
+        try {
+            dummy.style[prop] = value;
+            return dummy.style[prop] === value;
+        }
+        catch(er) {
+            return false;
+        }
+    },
+
+    /**
+     * Returns true if the property is supported
+     * @param {string} prop Property name
+     * @returns {boolean}
+     */
+    propertySupported: function(prop) {
+        // Supported property will return either inine style value or an empty string.
+        // Undefined means property is not supported.
+        return document.documentElement.style[prop] !== undefined;
+    },
+
+    /**
+     * Returns prefixed property name for js usage
+     * @param {string} prop Property name
+     * @returns {string|null}
+     */
+    getJsProperty: function(prop) {
+        // Try native property name first.
+        if(this.propertySupported(prop)) {
+            return prop;
+        }
+
+        // Prefix it if we know the vendor already
+        if(this._vendor) {
+            return this._prefixJsProperty(this._vendor, prop);
+        }
+
+        // We don't know the vendor, try all the possibilities
+        var prefixed;
+        for(var vendor in this._vendors) {
+            prefixed = this._prefixJsProperty(this._vendors[vendor], prop);
+            if(this.propertySupported(prefixed)) {
+                // Vendor detected. Cache it.
+                this._vendor = this._vendors[vendor];
+                return prefixed;
+            }
+        }
+
+        // Nothing worked
+        return null;
+    },
+
+    /**
+     * Returns supported css value for css property. Could be used to check support or get prefixed value string.
+     * @param {string} prop Property
+     * @param {string} value Value name
+     * @returns {string|null}
+     */
+    getCssValue: function(prop, value) {
+        // Create dummy element to test value
+        var dummy = document.createElement('div');
+
+        // Get supported property name
+        var jsProperty = this.getJsProperty(prop);
+
+        // Try unprefixed value
+        if(this._valueSupported(jsProperty, value, dummy)) {
+            return value;
+        }
+
+        var prefixedValue;
+
+        // If we know the vendor already try prefixed value
+        if(this._vendor) {
+            prefixedValue = this._prefixValue(this._vendor, value);
+            if(this._valueSupported(jsProperty, prefixedValue, dummy)) {
+                return prefixedValue;
+            }
+        }
+
+        // Try all vendors
+        for(var vendor in this._vendors) {
+            prefixedValue = this._prefixValue(this._vendors[vendor], value);
+            if(this._valueSupported(jsProperty, prefixedValue, dummy)) {
+                // Vendor detected. Cache it.
+                this._vendor = this._vendors[vendor];
+                return prefixedValue;
+            }
+        }
+        // No support for value
+        return null;
+    }
+};
+
+module.exports = Prefix;
+},{}]},{},[2]);
