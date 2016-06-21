@@ -1,7 +1,5 @@
-/*global require, module */
-
 // Class handles vendor prefixes
-function Prefix() {
+export default function Prefix() {
     // Cached vendor will be stored when it is detected
     this._vendor = null;
 
@@ -119,5 +117,3 @@ Prefix.prototype = {
         return null;
     }
 };
-
-module.exports = Prefix;

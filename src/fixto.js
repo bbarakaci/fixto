@@ -1,8 +1,8 @@
-/*global require, module */
-require('computed-style');
+import 'computed-style'
+import MimicNode from './mimic-node'
+import Prefix from './prefix'
+
 var computedStyle = window.computedStyle;
-var MimicNode = require('./mimic-node');
-var Prefix = require('./prefix');
 
 window.fixto = (function ($, window, document) {
 
@@ -73,7 +73,6 @@ window.fixto = (function ($, window, document) {
             if(this._$mind) {
                 var el;
                 var rect;
-                var height;
                 for(var i=0, l=this._$mind.length; i<l; i++) {
                     el = this._$mind[i];
                     rect = el.getBoundingClientRect();
