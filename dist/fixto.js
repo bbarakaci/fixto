@@ -132,10 +132,10 @@ window.fixto = function ($, window, document) {
     }
 
     function FixTo(child, parent, options) {
-        this.child = child;
+        this._child = child;
         this._$child = $(child);
-        this.parent = parent;
-        this.options = {
+        this._parent = parent;
+        this._options = {
             className: 'fixto-fixed',
             top: 0,
             mindViewport: false
@@ -198,12 +198,12 @@ window.fixto = function ($, window, document) {
         },
 
         _setOptions: function _setOptions(options) {
-            $.extend(this.options, options);
-            if (this.options.mind) {
-                this._$mind = $(this.options.mind);
+            $.extend(this._options, options);
+            if (this._options.mind) {
+                this._$mind = $(this._options.mind);
             }
-            if (this.options.zIndex) {
-                this.child.style.zIndex = this.options.zIndex;
+            if (this._options.zIndex) {
+                this._child.style.zIndex = this._options.zIndex;
             }
         },
 
@@ -256,14 +256,14 @@ window.fixto = function ($, window, document) {
 
         _onscroll: function _onscroll() {
             this._scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-            this._parentBottom = this.parent.offsetHeight + this._fullOffset('offsetTop', this.parent);
+            this._parentBottom = this._parent.offsetHeight + this._fullOffset('offsetTop', this._parent);
 
-            if (this.options.mindBottomPadding !== false) {
-                this._parentBottom -= computedStyle.getFloat(this.parent, 'paddingBottom');
+            if (this._options.mindBottomPadding !== false) {
+                this._parentBottom -= computedStyle.getFloat(this._parent, 'paddingBottom');
             }
 
             if (this.fixed) {
-                if (this._scrollTop > this._parentBottom || this._scrollTop < this._fullOffset('offsetTop', this._ghostNode) - this.options.top - this._mindtop()) {
+                if (this._scrollTop > this._parentBottom || this._scrollTop < this._fullOffset('offsetTop', this._ghostNode) - this._options.top - this._mindtop()) {
                     this._unfix();
                     return;
                 }
@@ -275,8 +275,8 @@ window.fixto = function ($, window, document) {
         },
 
         _shouldFix: function _shouldFix() {
-            if (this._scrollTop < this._parentBottom && this._scrollTop > this._fullOffset('offsetTop', this.child) - this.options.top - this._mindtop()) {
-                if (this.options.mindViewport && !this._isViewportAvailable()) {
+            if (this._scrollTop < this._parentBottom && this._scrollTop > this._fullOffset('offsetTop', this._child) - this._options.top - this._mindtop()) {
+                if (this._options.mindViewport && !this._isViewportAvailable()) {
                     return false;
                 }
                 return true;
@@ -284,33 +284,33 @@ window.fixto = function ($, window, document) {
         },
 
         _isViewportAvailable: function _isViewportAvailable() {
-            var childStyles = computedStyle.getAll(this.child);
-            return this._viewportHeight > this.child.offsetHeight + computedStyle.toFloat(childStyles.marginTop) + computedStyle.toFloat(childStyles.marginBottom);
+            var childStyles = computedStyle.getAll(this._child);
+            return this._viewportHeight > this._child.offsetHeight + computedStyle.toFloat(childStyles.marginTop) + computedStyle.toFloat(childStyles.marginBottom);
         },
 
         _adjust: function _adjust() {
             var top = 0;
             var mindTop = this._mindtop();
             var diff = 0;
-            var childStyles = computedStyle.getAll(this.child);
+            var childStyles = computedStyle.getAll(this._child);
             var context = null;
 
             if (fixedPositioningContext) {
                 // Get positioning context.
-                context = _PositioningContext2.default.getContext(this.child);
+                context = _PositioningContext2.default.getContext(this._child);
                 if (context) {
                     // There is a positioning context. Top should be according to the context.
                     top = Math.abs(context.getBoundingClientRect().top);
                 }
             }
 
-            diff = this._parentBottom - this._scrollTop - (this.child.offsetHeight + computedStyle.toFloat(childStyles.marginBottom) + mindTop + this.options.top);
+            diff = this._parentBottom - this._scrollTop - (this._child.offsetHeight + computedStyle.toFloat(childStyles.marginBottom) + mindTop + this._options.top);
 
             if (diff > 0) {
                 diff = 0;
             }
 
-            this.child.style.top = diff + mindTop + top + this.options.top - computedStyle.toFloat(childStyles.marginTop) + 'px';
+            this._child.style.top = diff + mindTop + top + this._options.top - computedStyle.toFloat(childStyles.marginTop) + 'px';
         },
 
         // Calculate cumulative offset of the element.
@@ -329,7 +329,7 @@ window.fixto = function ($, window, document) {
         },
 
         _fix: function _fix() {
-            var child = this.child;
+            var child = this._child;
             var childStyle = child.style;
             var childStyles = computedStyle.getAll(child);
             var left = child.getBoundingClientRect().left;
@@ -345,7 +345,7 @@ window.fixto = function ($, window, document) {
 
             // Ie still fixes the container according to the viewport.
             if (fixedPositioningContext) {
-                var context = _PositioningContext2.default.getContext(this.child);
+                var context = _PositioningContext2.default.getContext(this._child);
                 if (context) {
                     // There is a positioning context. Left should be according to the context.
                     left = child.getBoundingClientRect().left - context.getBoundingClientRect().left;
@@ -358,24 +358,24 @@ window.fixto = function ($, window, document) {
             childStyle.width = width;
 
             childStyle.position = 'fixed';
-            childStyle.top = this._mindtop() + this.options.top - computedStyle.toFloat(childStyles.marginTop) + 'px';
-            this._$child.addClass(this.options.className);
+            childStyle.top = this._mindtop() + this._options.top - computedStyle.toFloat(childStyles.marginTop) + 'px';
+            this._$child.addClass(this._options.className);
             this.fixed = true;
         },
 
         _unfix: function _unfix() {
-            var childStyle = this.child.style;
+            var childStyle = this._child.style;
             this._replacer.hide();
             childStyle.position = this._childOriginalPosition;
             childStyle.top = this._childOriginalTop;
             childStyle.width = this._childOriginalWidth;
             childStyle.left = this._childOriginalLeft;
-            this._$child.removeClass(this.options.className);
+            this._$child.removeClass(this._options.className);
             this.fixed = false;
         },
 
         _saveStyles: function _saveStyles() {
-            var childStyle = this.child.style;
+            var childStyle = this._child.style;
             this._childOriginalPosition = childStyle.position;
             this._childOriginalTop = childStyle.top;
             this._childOriginalWidth = childStyle.width;
@@ -430,22 +430,22 @@ window.fixto = function ($, window, document) {
     $.extend(NativeSticky.prototype, {
         _start: function _start() {
 
-            var childStyles = computedStyle.getAll(this.child);
+            var childStyles = computedStyle.getAll(this._child);
 
             this._childOriginalPosition = childStyles.position;
             this._childOriginalTop = childStyles.top;
 
-            this.child.style.position = nativeStickyValue;
+            this._child.style.position = nativeStickyValue;
             this.refresh();
         },
 
         _stop: function _stop() {
-            this.child.style.position = this._childOriginalPosition;
-            this.child.style.top = this._childOriginalTop;
+            this._child.style.position = this._childOriginalPosition;
+            this._child.style.top = this._childOriginalTop;
         },
 
         refresh: function refresh() {
-            this.child.style.top = this._mindtop() + this.options.top + 'px';
+            this._child.style.top = this._mindtop() + this._options.top + 'px';
         }
     });
 
