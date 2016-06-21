@@ -201,14 +201,14 @@ window.fixto = function ($, window, document) {
                 this._parentBottom -= computedStyle.getFloat(this.parent, 'paddingBottom');
             }
 
-            if (!this.fixed && this._shouldFix()) {
-                this._fix();
-                this._adjust();
-            } else {
+            if (this.fixed) {
                 if (this._scrollTop > this._parentBottom || this._scrollTop < this._fullOffset('offsetTop', this._ghostNode) - this.options.top - this._mindtop()) {
                     this._unfix();
                     return;
                 }
+                this._adjust();
+            } else if (this._shouldFix()) {
+                this._fix();
                 this._adjust();
             }
         },
