@@ -6,7 +6,95 @@ window.computedStyle=function(){var e={getAll:function(e){return document.defaul
 },{}],2:[function(require,module,exports){
 'use strict';
 
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _prefix = require('./prefix');
+
 require('computed-style');
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var computedStyle = window.computedStyle;
+
+// We will need this frequently. Lets have it as a global until we encapsulate properly.
+var transformJsProperty = _prefix.prefix.getJsProperty('transform');
+
+var PositioningContext = function () {
+    function PositioningContext() {
+        _classCallCheck(this, PositioningContext);
+    }
+
+    // Checks if browser creates a positioning context for fixed elements.
+    // Transform rule will create a positioning context on browsers who follow the spec.
+    // Ie for example will fix it according to documentElement
+    // TODO: Other css rules also effects. perspective creates at chrome but not in firefox. transform-style preserve3d effects.
+
+
+    _createClass(PositioningContext, [{
+        key: 'createsContext',
+        value: function createsContext() {
+            var support = false;
+            var parent = document.createElement('div');
+            var child = document.createElement('div');
+
+            parent.appendChild(child);
+            parent.style[transformJsProperty] = 'translate(0)';
+            // Make sure there is space on top of parent
+            parent.style.marginTop = '10px';
+            parent.style.visibility = 'hidden';
+            child.style.position = 'fixed';
+            child.style.top = 0;
+            document.body.appendChild(parent);
+            var rect = child.getBoundingClientRect();
+            // If offset top is greater than 0 means transformed element created a positioning context.
+            if (rect.top > 0) {
+                support = true;
+            }
+            // Remove dummy content
+            document.body.removeChild(parent);
+            return support;
+        }
+
+        // Get positioning context of an element.
+        // We know that the closest parent that a transform rule applied will create a positioning context.
+
+    }, {
+        key: 'getContext',
+        value: function getContext(element) {
+            var parent = void 0;
+            var context = null;
+            var styles = void 0;
+
+            // Climb up the treee until reaching the context
+            while (!context) {
+                parent = element.parentNode;
+                if (parent === document.documentElement) {
+                    return null;
+                }
+
+                styles = computedStyle.getAll(parent);
+                // Element has a transform rule
+                if (styles[transformJsProperty] !== 'none') {
+                    context = parent;
+                    break;
+                }
+                element = parent;
+            }
+            return context;
+        }
+    }]);
+
+    return PositioningContext;
+}();
+
+exports.default = new PositioningContext();
+
+},{"./prefix":5,"computed-style":1}],3:[function(require,module,exports){
+'use strict';
 
 var _mimicNode = require('./mimic-node');
 
@@ -14,7 +102,11 @@ var _mimicNode2 = _interopRequireDefault(_mimicNode);
 
 var _prefix = require('./prefix');
 
-var _prefix2 = _interopRequireDefault(_prefix);
+var _PositioningContext = require('./PositioningContext');
+
+var _PositioningContext2 = _interopRequireDefault(_PositioningContext);
+
+require('computed-style');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -22,45 +114,14 @@ var computedStyle = window.computedStyle;
 
 window.fixto = function ($, window, document) {
 
-    var prefix = new _prefix2.default();
-
-    // We will need this frequently. Lets have it as a global until we encapsulate properly.
-    var transformJsProperty = prefix.getJsProperty('transform');
-
     // Will hold if browser creates a positioning context for fixed elements.
-    var fixedPositioningContext;
-
-    // Checks if browser creates a positioning context for fixed elements.
-    // Transform rule will create a positioning context on browsers who follow the spec.
-    // Ie for example will fix it according to documentElement
-    // TODO: Other css rules also effects. perspective creates at chrome but not in firefox. transform-style preserve3d effects.
-    function checkFixedPositioningContextSupport() {
-        var support = false;
-        var parent = document.createElement('div');
-        var child = document.createElement('div');
-        parent.appendChild(child);
-        parent.style[transformJsProperty] = 'translate(0)';
-        // Make sure there is space on top of parent
-        parent.style.marginTop = '10px';
-        parent.style.visibility = 'hidden';
-        child.style.position = 'fixed';
-        child.style.top = 0;
-        document.body.appendChild(parent);
-        var rect = child.getBoundingClientRect();
-        // If offset top is greater than 0 meand transformed element created a positioning context.
-        if (rect.top > 0) {
-            support = true;
-        }
-        // Remove dummy content
-        document.body.removeChild(parent);
-        return support;
-    }
+    var fixedPositioningContext = void 0;
 
     // It will return null if position sticky is not supported
-    var nativeStickyValue = prefix.getCssValue('position', 'sticky');
+    var nativeStickyValue = _prefix.prefix.getCssValue('position', 'sticky');
 
     // It will return null if position fixed is not supported
-    var fixedPositionValue = prefix.getCssValue('position', 'fixed');
+    var fixedPositionValue = _prefix.prefix.getCssValue('position', 'fixed');
 
     // Dirty business
     var ie = navigator.appName === 'Microsoft Internet Explorer';
@@ -236,7 +297,7 @@ window.fixto = function ($, window, document) {
 
             if (fixedPositioningContext) {
                 // Get positioning context.
-                context = this._getContext();
+                context = _PositioningContext2.default.getContext(this.child);
                 if (context) {
                     // There is a positioning context. Top should be according to the context.
                     top = Math.abs(context.getBoundingClientRect().top);
@@ -267,32 +328,6 @@ window.fixto = function ($, window, document) {
             return offset;
         },
 
-        // Get positioning context of the element.
-        // We know that the closest parent that a transform rule applied will create a positioning context.
-        _getContext: function _getContext() {
-            var parent;
-            var element = this.child;
-            var context = null;
-            var styles;
-
-            // Climb up the treee until reaching the context
-            while (!context) {
-                parent = element.parentNode;
-                if (parent === document.documentElement) {
-                    return null;
-                }
-
-                styles = computedStyle.getAll(parent);
-                // Element has a transform rule
-                if (styles[transformJsProperty] !== 'none') {
-                    context = parent;
-                    break;
-                }
-                element = parent;
-            }
-            return context;
-        },
-
         _fix: function _fix() {
             var child = this.child;
             var childStyle = child.style;
@@ -310,7 +345,7 @@ window.fixto = function ($, window, document) {
 
             // Ie still fixes the container according to the viewport.
             if (fixedPositioningContext) {
-                var context = this._getContext();
+                var context = _PositioningContext2.default.getContext(this.child);
                 if (context) {
                     // There is a positioning context. Left should be according to the context.
                     left = child.getBoundingClientRect().left - context.getBoundingClientRect().left;
@@ -423,7 +458,7 @@ window.fixto = function ($, window, document) {
 
             if (fixedPositioningContext === undefined) {
                 // We don't know yet if browser creates fixed positioning contexts. Check it.
-                fixedPositioningContext = checkFixedPositioningContextSupport();
+                fixedPositioningContext = _PositioningContext2.default.createsContext();
             }
 
             return new FixToContainer(childElement, parentElement, options);
@@ -479,7 +514,7 @@ window.fixto = function ($, window, document) {
     };
 }(window.jQuery, window, document);
 
-},{"./mimic-node":3,"./prefix":4,"computed-style":1}],3:[function(require,module,exports){
+},{"./PositioningContext":2,"./mimic-node":4,"./prefix":5,"computed-style":1}],4:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -568,13 +603,12 @@ if (!bcr.width) {
     MimicNode.prototype._height = MimicNode.prototype._heightOffset;
 }
 
-},{"computed-style":1}],4:[function(require,module,exports){
+},{"computed-style":1}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.default = Prefix;
 // Class handles vendor prefixes
 function Prefix() {
     // Cached vendor will be stored when it is detected
@@ -694,4 +728,6 @@ Prefix.prototype = {
     }
 };
 
-},{}]},{},[2]);
+var prefix = exports.prefix = new Prefix();
+
+},{}]},{},[3]);

@@ -1,50 +1,19 @@
-import 'computed-style'
-import MimicNode from './mimic-node'
-import Prefix from './prefix'
-
-var computedStyle = window.computedStyle;
+import MimicNode from './mimic-node';
+import {prefix} from './prefix';
+import positioningContext from './PositioningContext';
+import 'computed-style';
+const computedStyle = window.computedStyle;
 
 window.fixto = (function ($, window, document) {
 
-    var prefix = new Prefix();
-
-    // We will need this frequently. Lets have it as a global until we encapsulate properly.
-    var transformJsProperty = prefix.getJsProperty('transform');
-
     // Will hold if browser creates a positioning context for fixed elements.
-    var fixedPositioningContext;
-
-    // Checks if browser creates a positioning context for fixed elements.
-    // Transform rule will create a positioning context on browsers who follow the spec.
-    // Ie for example will fix it according to documentElement
-    // TODO: Other css rules also effects. perspective creates at chrome but not in firefox. transform-style preserve3d effects.
-    function checkFixedPositioningContextSupport() {
-        var support = false;
-        var parent = document.createElement('div');
-        var child = document.createElement('div');
-        parent.appendChild(child);
-        parent.style[transformJsProperty] = 'translate(0)';
-        // Make sure there is space on top of parent
-        parent.style.marginTop = '10px';
-        parent.style.visibility = 'hidden';
-        child.style.position = 'fixed';
-        child.style.top = 0;
-        document.body.appendChild(parent);
-        var rect = child.getBoundingClientRect();
-        // If offset top is greater than 0 meand transformed element created a positioning context.
-        if(rect.top > 0) {
-            support = true;
-        }
-        // Remove dummy content
-        document.body.removeChild(parent);
-        return support;
-    }
+    let fixedPositioningContext;
 
     // It will return null if position sticky is not supported
-    var nativeStickyValue = prefix.getCssValue('position', 'sticky');
+    const nativeStickyValue = prefix.getCssValue('position', 'sticky');
 
     // It will return null if position fixed is not supported
-    var fixedPositionValue = prefix.getCssValue('position', 'fixed');
+    const fixedPositionValue = prefix.getCssValue('position', 'fixed');
 
     // Dirty business
     var ie = navigator.appName === 'Microsoft Internet Explorer';
@@ -229,7 +198,7 @@ window.fixto = (function ($, window, document) {
 
             if(fixedPositioningContext) {
                 // Get positioning context.
-                context = this._getContext();
+                context = positioningContext.getContext(this.child);
                 if(context) {
                     // There is a positioning context. Top should be according to the context.
                     top = Math.abs(context.getBoundingClientRect().top);
@@ -260,32 +229,6 @@ window.fixto = (function ($, window, document) {
             return offset;
         },
 
-        // Get positioning context of the element.
-        // We know that the closest parent that a transform rule applied will create a positioning context.
-        _getContext: function() {
-            var parent;
-            var element = this.child;
-            var context = null;
-            var styles;
-
-            // Climb up the treee until reaching the context
-            while(!context) {
-                parent = element.parentNode;
-                if(parent === document.documentElement) {
-                    return null;
-                }
-
-                styles = computedStyle.getAll(parent);
-                // Element has a transform rule
-                if(styles[transformJsProperty] !== 'none') {
-                    context = parent;
-                    break;
-                }
-                element = parent;
-            }
-            return context;
-        },
-
         _fix: function _fix() {
             var child = this.child;
             var childStyle = child.style;
@@ -303,7 +246,7 @@ window.fixto = (function ($, window, document) {
 
             // Ie still fixes the container according to the viewport.
             if(fixedPositioningContext) {
-                var context = this._getContext();
+                var context = positioningContext.getContext(this.child);
                 if(context) {
                     // There is a positioning context. Left should be according to the context.
                     left = child.getBoundingClientRect().left - context.getBoundingClientRect().left;
@@ -419,7 +362,7 @@ window.fixto = (function ($, window, document) {
 
              if(fixedPositioningContext===undefined) {
                 // We don't know yet if browser creates fixed positioning contexts. Check it.
-                fixedPositioningContext = checkFixedPositioningContextSupport();
+                fixedPositioningContext = positioningContext.createsContext();
              }
 
             return new FixToContainer(childElement, parentElement, options);

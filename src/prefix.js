@@ -1,5 +1,5 @@
 // Class handles vendor prefixes
-export default function Prefix() {
+function Prefix() {
     // Cached vendor will be stored when it is detected
     this._vendor = null;
 
@@ -117,3 +117,5 @@ Prefix.prototype = {
         return null;
     }
 };
+
+export const prefix = new Prefix();
