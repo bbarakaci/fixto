@@ -1,9 +1,113 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+'use strict';
+
+/** @namespace */
+window.ftools = window.ftools || {};
+
+ftools.ClassList = function () {};
+
+ftools.ClassList.prototype = {
+
+	add: function add(container, name) {
+		container.classList.add(name);
+	},
+
+	remove: function remove(container, name) {
+		container.classList.remove(name);
+	}
+};
+
+ftools.CustomClassName = function () {};
+
+ftools.CustomClassName.prototype = {
+	_getArray: function _getArray(container) {
+		var ar = container.className.split(' ');
+		var i = ar.length;
+		while (i--) {
+			if (!ar[i]) {
+				ar.splice(i, 1);
+			}
+		}
+		return ar;
+	},
+
+	_has: function _has(ar, name) {
+		var i = ar.length;
+		while (i--) {
+			if (ar[i] === name) {
+				return true;
+			}
+		}
+		return false;
+	},
+
+	_set: function _set(ar, container) {
+		var str = ar.join(' ');
+		container.className = str;
+	},
+
+	add: function add(container, name) {
+		var ar = this._getArray(container);
+		if (!this._has(ar, name)) {
+			ar.push(name);
+			this._set(ar, container);
+		}
+	},
+
+	remove: function remove(container, name) {
+		var ar = this._getArray(container);
+		var i = ar.length;
+
+		while (i--) {
+			if (ar[i] === name) {
+				ar.splice(i, 1);
+				this._set(ar, container);
+				break;
+			}
+		}
+	}
+};
+
+/**
+ * Adds / removes css class name to dom elements
+ * @constructor
+ */
+ftools.CssClass = function () {
+	var dummy = document.createElement('div');
+	if (dummy.classList) {
+		this._system = new ftools.ClassList();
+	} else {
+		this._system = new ftools.CustomClassName();
+	}
+};
+
+ftools.CssClass.prototype = {
+
+	/**
+  * Adds a class name
+  * @param {HTMLElement} container Dom element to add the class name
+  * @param {string} name Class name to add
+  */
+	add: function add(container, name) {
+		this._system.add(container, name);
+	},
+
+	/**
+  * Removes a class name
+  * @param {HTMLElement} container Dom element to remove the class name
+  * @param {string} name Class name to remove
+  */
+	remove: function remove(container, name) {
+		this._system.remove(container, name);
+	}
+};
+
+},{}],2:[function(require,module,exports){
 /*! Computed Style - v0.1.1 - 2016-06-18
 * https://github.com/bbarakaci/computed-style
 * Copyright (c) 2012 Burak Barakaci; Licensed MIT */
 window.computedStyle=function(){var e={getAll:function(e){return document.defaultView.getComputedStyle(e)},get:function(e,t){return this.getAll(e)[t]},toFloat:function(e){return parseFloat(e,10)||0},getFloat:function(e,t){return this.toFloat(this.get(e,t))},_getAllCurrentStyle:function(e){return e.currentStyle}};return document.documentElement.currentStyle&&(e.getAll=e._getAllCurrentStyle),e}();
-},{}],2:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -93,7 +197,31 @@ var PositioningContext = function () {
 
 exports.default = new PositioningContext();
 
-},{"./prefix":5,"computed-style":1}],3:[function(require,module,exports){
+},{"./prefix":7,"computed-style":2}],4:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.addEventListener = addEventListener;
+exports.removeEventListener = removeEventListener;
+function addEventListener(element, type, handler) {
+    if (element.addEventListener) {
+        element.addEventListener(type, handler, false);
+    } else if (element.attachEvent) {
+        element.attachEvent('on' + type, handler);
+    }
+}
+
+function removeEventListener(element, type, handler) {
+    if (element.removeEventListener) {
+        element.removeEventListener(type, handler, false);
+    } else if (element.detachEvent) {
+        element.detachEvent('on' + type, handler);
+    }
+}
+
+},{}],5:[function(require,module,exports){
 'use strict';
 
 var _mimicNode = require('./mimic-node');
@@ -106,11 +234,13 @@ var _PositioningContext = require('./PositioningContext');
 
 var _PositioningContext2 = _interopRequireDefault(_PositioningContext);
 
+var _eventRegistration = require('./event-registration');
+
 require('computed-style');
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+require('../libs/ftools/cssClass');
 
-var computedStyle = window.computedStyle;
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 window.fixto = function ($, window, document) {
 
@@ -123,6 +253,8 @@ window.fixto = function ($, window, document) {
     // It will return null if position fixed is not supported
     var fixedPositionValue = _prefix.prefix.getCssValue('position', 'fixed');
 
+    var classList = new ftools.CssClass();
+
     // Dirty business
     var ie = navigator.appName === 'Microsoft Internet Explorer';
     var ieversion;
@@ -133,7 +265,6 @@ window.fixto = function ($, window, document) {
 
     function FixTo(child, parent, options) {
         this._child = child;
-        this._$child = $(child);
         this._parent = parent;
         this._options = {
             className: 'fixto-fixed',
@@ -147,11 +278,11 @@ window.fixto = function ($, window, document) {
         // Returns the total outerHeight of the elements passed to mind option. Will return 0 if none.
         _mindtop: function _mindtop() {
             var top = 0;
-            if (this._$mind) {
+            if (this._minds) {
                 var el;
                 var rect;
-                for (var i = 0, l = this._$mind.length; i < l; i++) {
-                    el = this._$mind[i];
+                for (var i = 0, l = this._minds.length; i < l; i++) {
+                    el = this._minds[i];
                     rect = el.getBoundingClientRect();
                     if (rect.height) {
                         top += rect.height;
@@ -187,7 +318,7 @@ window.fixto = function ($, window, document) {
             this._destroy();
 
             // Remove jquery data from the element
-            this._$child.removeData('fixto-instance');
+            $(this._child).removeData('fixto-instance');
 
             // set properties to null to break references
             for (var prop in this) {
@@ -198,9 +329,9 @@ window.fixto = function ($, window, document) {
         },
 
         _setOptions: function _setOptions(options) {
-            $.extend(this._options, options);
+            Object.assign(this._options, options);
             if (this._options.mind) {
-                this._$mind = $(this._options.mind);
+                this._minds = document.querySelectorAll(this._options.mind);
             }
             if (this._options.zIndex) {
                 this._child.style.zIndex = this._options.zIndex;
@@ -242,7 +373,7 @@ window.fixto = function ($, window, document) {
 
     FixToContainer.prototype = new FixTo();
 
-    $.extend(FixToContainer.prototype, {
+    Object.assign(FixToContainer.prototype, {
 
         // Returns an anonymous function that will call the given function in the given context
         _bind: function _bind(fn, context) {
@@ -359,7 +490,7 @@ window.fixto = function ($, window, document) {
 
             childStyle.position = 'fixed';
             childStyle.top = this._mindtop() + this._options.top - computedStyle.toFloat(childStyles.marginTop) + 'px';
-            this._$child.addClass(this._options.className);
+            classList.add(this._child, this._options.className);
             this.fixed = true;
         },
 
@@ -370,7 +501,7 @@ window.fixto = function ($, window, document) {
             childStyle.top = this._childOriginalTop;
             childStyle.width = this._childOriginalWidth;
             childStyle.left = this._childOriginalLeft;
-            this._$child.removeClass(this._options.className);
+            classList.remove(this._child, this._options.className);
             this.fixed = false;
         },
 
@@ -395,8 +526,8 @@ window.fixto = function ($, window, document) {
             // Unfix the container immediately.
             this._unfix();
             // remove event listeners
-            $(window).unbind('scroll', this._proxied_onscroll);
-            $(this._toresize).unbind('resize', this._proxied_onresize);
+            (0, _eventRegistration.removeEventListener)(window, 'scroll', this._proxied_onscroll);
+            (0, _eventRegistration.removeEventListener)(this._toresize, 'resize', this._proxied_onresize);
         },
 
         _start: function _start() {
@@ -404,8 +535,8 @@ window.fixto = function ($, window, document) {
             this._onscroll();
 
             // Attach event listeners
-            $(window).bind('scroll', this._proxied_onscroll);
-            $(this._toresize).bind('resize', this._proxied_onresize);
+            (0, _eventRegistration.addEventListener)(window, 'scroll', this._proxied_onscroll);
+            (0, _eventRegistration.addEventListener)(this._toresize, 'resize', this._proxied_onresize);
         },
 
         _destroy: function _destroy() {
@@ -427,7 +558,7 @@ window.fixto = function ($, window, document) {
 
     NativeSticky.prototype = new FixTo();
 
-    $.extend(NativeSticky.prototype, {
+    Object.assign(NativeSticky.prototype, {
         _start: function _start() {
 
             var childStyles = computedStyle.getAll(this._child);
@@ -514,7 +645,7 @@ window.fixto = function ($, window, document) {
     };
 }(window.jQuery, window, document);
 
-},{"./PositioningContext":2,"./mimic-node":4,"./prefix":5,"computed-style":1}],4:[function(require,module,exports){
+},{"../libs/ftools/cssClass":1,"./PositioningContext":3,"./event-registration":4,"./mimic-node":6,"./prefix":7,"computed-style":2}],6:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -603,7 +734,7 @@ if (!bcr.width) {
     MimicNode.prototype._height = MimicNode.prototype._heightOffset;
 }
 
-},{"computed-style":1}],5:[function(require,module,exports){
+},{"computed-style":2}],7:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -730,4 +861,4 @@ Prefix.prototype = {
 
 var prefix = exports.prefix = new Prefix();
 
-},{}]},{},[3]);
+},{}]},{},[5]);

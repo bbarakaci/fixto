@@ -15,10 +15,10 @@ var path = 'http://localhost:8080/tests/';
 var helper = {
     scroll: function(value) {
         driver.executeScript('window.scrollTo(0, '+value+')');
+        // TODO: Something is not ok, sometimes tests fail randomly.
+        driver.sleep(10);
     },
     getRect: function() {
-        // TODO: Something is not ok, sometimes tests fail randomly.
-        driver.sleep(20);
         return driver.executeAsyncScript(function(callback) {
             setTimeout(function() {
                 callback(document.querySelector(".child").getBoundingClientRect());
@@ -91,6 +91,28 @@ test.describe('Fixto', function () {
         helper.scroll(175);
         helper.getRect().then(function(rect) {
             assert(rect.top).equals(75);
+        });
+    });
+
+    test.it('should add class', function () {
+        driver.get(path + 'basic.html');
+        helper.scroll(100);
+        var child = driver.findElement(By.css('.child'));
+        child.getAttribute('class').then(function(value) {
+            assert(value).equals('child fixto-fixed');
+        });
+    });
+
+    test.it('should remove class', function () {
+        driver.get(path + 'basic.html');
+        helper.scroll(100);
+        var child = driver.findElement(By.css('.child'));
+        child.getAttribute('class').then(function(value) {
+            assert(value).equals('child fixto-fixed');
+        });
+        helper.scroll(250);
+        child.getAttribute('class').then(function(value) {
+            assert(value).equals('child');
         });
     });
 });

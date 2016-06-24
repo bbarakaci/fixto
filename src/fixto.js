@@ -1,8 +1,9 @@
 import MimicNode from './mimic-node';
 import {prefix} from './prefix';
 import positioningContext from './PositioningContext';
+import {addEventListener, removeEventListener} from './event-registration';
 import 'computed-style';
-const computedStyle = window.computedStyle;
+import '../libs/ftools/cssClass';
 
 window.fixto = (function ($, window, document) {
 
@@ -15,6 +16,8 @@ window.fixto = (function ($, window, document) {
     // It will return null if position fixed is not supported
     const fixedPositionValue = prefix.getCssValue('position', 'fixed');
 
+    const classList = new ftools.CssClass();
+
     // Dirty business
     var ie = navigator.appName === 'Microsoft Internet Explorer';
     var ieversion;
@@ -25,7 +28,6 @@ window.fixto = (function ($, window, document) {
 
     function FixTo(child, parent, options) {
         this._child = child;
-        this._$child = $(child);
         this._parent = parent;
         this._options = {
             className: 'fixto-fixed',
@@ -39,11 +41,11 @@ window.fixto = (function ($, window, document) {
         // Returns the total outerHeight of the elements passed to mind option. Will return 0 if none.
         _mindtop: function () {
             var top = 0;
-            if(this._$mind) {
+            if(this._minds) {
                 var el;
                 var rect;
-                for(var i=0, l=this._$mind.length; i<l; i++) {
-                    el = this._$mind[i];
+                for(var i=0, l=this._minds.length; i<l; i++) {
+                    el = this._minds[i];
                     rect = el.getBoundingClientRect();
                     if(rect.height) {
                         top += rect.height;
@@ -80,7 +82,7 @@ window.fixto = (function ($, window, document) {
             this._destroy();
 
             // Remove jquery data from the element
-            this._$child.removeData('fixto-instance');
+            $(this._child).removeData('fixto-instance');
 
             // set properties to null to break references
             for (var prop in this) {
@@ -91,9 +93,9 @@ window.fixto = (function ($, window, document) {
         },
 
         _setOptions: function(options) {
-            $.extend(this._options, options);
+            Object.assign(this._options, options);
             if(this._options.mind) {
-                this._$mind = $(this._options.mind);
+                this._minds = document.querySelectorAll(this._options.mind);
             }
             if(this._options.zIndex) {
                 this._child.style.zIndex = this._options.zIndex;
@@ -143,7 +145,7 @@ window.fixto = (function ($, window, document) {
 
     FixToContainer.prototype = new FixTo();
 
-    $.extend(FixToContainer.prototype, {
+    Object.assign(FixToContainer.prototype, {
 
         // Returns an anonymous function that will call the given function in the given context
         _bind : function (fn, context) {
@@ -260,7 +262,7 @@ window.fixto = (function ($, window, document) {
 
             childStyle.position = 'fixed';
             childStyle.top = this._mindtop() + this._options.top - computedStyle.toFloat(childStyles.marginTop) + 'px';
-            this._$child.addClass(this._options.className);
+            classList.add(this._child, this._options.className);
             this.fixed = true;
         },
 
@@ -271,7 +273,7 @@ window.fixto = (function ($, window, document) {
             childStyle.top = this._childOriginalTop;
             childStyle.width = this._childOriginalWidth;
             childStyle.left = this._childOriginalLeft;
-            this._$child.removeClass(this._options.className);
+            classList.remove(this._child, this._options.className);
             this.fixed = false;
         },
 
@@ -296,8 +298,8 @@ window.fixto = (function ($, window, document) {
             // Unfix the container immediately.
             this._unfix();
             // remove event listeners
-            $(window).unbind('scroll', this._proxied_onscroll);
-            $(this._toresize).unbind('resize', this._proxied_onresize);
+            removeEventListener(window, 'scroll', this._proxied_onscroll);
+            removeEventListener(this._toresize, 'resize', this._proxied_onresize);
         },
 
         _start: function() {
@@ -305,8 +307,8 @@ window.fixto = (function ($, window, document) {
             this._onscroll();
 
             // Attach event listeners
-            $(window).bind('scroll', this._proxied_onscroll);
-            $(this._toresize).bind('resize', this._proxied_onresize);
+            addEventListener(window, 'scroll', this._proxied_onscroll);
+            addEventListener(this._toresize, 'resize', this._proxied_onresize);
         },
 
         _destroy: function() {
@@ -328,7 +330,7 @@ window.fixto = (function ($, window, document) {
 
     NativeSticky.prototype = new FixTo();
 
-    $.extend(NativeSticky.prototype, {
+    Object.assign(NativeSticky.prototype, {
         _start: function() {
 
             var childStyles = computedStyle.getAll(this._child);
