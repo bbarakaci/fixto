@@ -130,6 +130,8 @@ var transformJsProperty = _prefix.prefix.getJsProperty('transform');
 var PositioningContext = function () {
     function PositioningContext() {
         _classCallCheck(this, PositioningContext);
+
+        this._createsContext = false;
     }
 
     // Checks if browser creates a positioning context for fixed elements.
@@ -197,7 +199,276 @@ var PositioningContext = function () {
 
 exports.default = new PositioningContext();
 
-},{"./prefix":7,"computed-style":2}],4:[function(require,module,exports){
+},{"./prefix":13,"computed-style":2}],4:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.Fixto = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _destroyable = require('./destroyable');
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Fixto = exports.Fixto = function (_Destroyable) {
+    _inherits(Fixto, _Destroyable);
+
+    function Fixto(child, options) {
+        _classCallCheck(this, Fixto);
+
+        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Fixto).call(this));
+
+        _this._child = child;
+        _this._parent = child.parentNode;
+        _this._options = {
+            className: 'fixto-fixed',
+            top: 0,
+            mindViewport: false
+        };
+        _this._setOptions(options);
+        return _this;
+    }
+
+    // Returns the total outerHeight of the elements passed to mind option. Will return 0 if none.
+
+
+    _createClass(Fixto, [{
+        key: '_mindtop',
+        value: function _mindtop() {
+            var top = 0;
+            if (this._minds) {
+                var el;
+                var rect;
+                for (var i = 0, l = this._minds.length; i < l; i++) {
+                    el = this._minds[i];
+                    rect = el.getBoundingClientRect();
+                    if (rect.height) {
+                        top += rect.height;
+                    } else {
+                        var styles = computedStyle.getAll(el);
+                        top += el.offsetHeight + computedStyle.toFloat(styles.marginTop) + computedStyle.toFloat(styles.marginBottom);
+                    }
+                }
+            }
+            return top;
+        }
+
+        // Public method to stop the behaviour of this instance.
+
+    }, {
+        key: 'stop',
+        value: function stop() {
+            this._stop();
+            this._running = false;
+        }
+
+        // Public method starts the behaviour of this instance.
+
+    }, {
+        key: 'start',
+        value: function start() {
+
+            // Start only if it is not running not to attach event listeners multiple times.
+            if (!this._running) {
+                this._start();
+                this._running = true;
+            }
+        }
+
+        //Public method to destroy fixto behaviour
+
+    }, {
+        key: 'destroy',
+        value: function destroy() {
+            this.stop();
+
+            this._destroy();
+
+            _get(Object.getPrototypeOf(Fixto.prototype), 'destroy', this).call(this);
+        }
+    }, {
+        key: '_setOptions',
+        value: function _setOptions(options) {
+            Object.assign(this._options, options);
+            if (this._options.mind) {
+                this._minds = document.querySelectorAll(this._options.mind);
+            }
+            if (this._options.zIndex) {
+                this._child.style.zIndex = this._options.zIndex;
+            }
+        }
+    }, {
+        key: 'setOptions',
+        value: function setOptions(options) {
+            this._setOptions(options);
+            this.refresh();
+        }
+
+        // Methods could be implemented by subclasses
+
+    }, {
+        key: '_stop',
+        value: function _stop() {}
+    }, {
+        key: '_start',
+        value: function _start() {}
+    }, {
+        key: '_destroy',
+        value: function _destroy() {}
+    }, {
+        key: 'refresh',
+        value: function refresh() {}
+    }]);
+
+    return Fixto;
+}(_destroyable.Destroyable);
+
+},{"./destroyable":6}],5:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.Collection = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _destroyable = require('./destroyable');
+
+var _environment = require('./environment');
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Collection = exports.Collection = function (_Destroyable) {
+    _inherits(Collection, _Destroyable);
+
+    function Collection(selector, options, Constructor) {
+        _classCallCheck(this, Collection);
+
+        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Collection).call(this));
+
+        _this._collection = [];
+        var elements = document.querySelectorAll(selector);
+        for (var i = 0, l = elements.length; i < l; i++) {
+            var element = elements[i];
+            _this._collection.push(new Constructor(element, options));
+        }
+        return _this;
+    }
+
+    _createClass(Collection, [{
+        key: '_delegate',
+        value: function _delegate(method) {
+            for (var i = 0, l = this._collection.length; i < l; i++) {
+                var instance = this._collection[i];
+                instance[method]();
+            }
+        }
+    }, {
+        key: 'start',
+        value: function start() {
+            this._delegate('start');
+        }
+    }, {
+        key: 'stop',
+        value: function stop() {
+            this._delegate('stop');
+        }
+    }, {
+        key: 'destroy',
+        value: function destroy() {
+            this._delegate('destroy');
+            _get(Object.getPrototypeOf(Collection.prototype), 'destroy', this).call(this);
+        }
+    }, {
+        key: 'refresh',
+        value: function refresh() {
+            this._delegate('refresh');
+        }
+    }]);
+
+    return Collection;
+}(_destroyable.Destroyable);
+
+},{"./destroyable":6,"./environment":7}],6:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Destroyable = exports.Destroyable = function () {
+    function Destroyable() {
+        _classCallCheck(this, Destroyable);
+    }
+
+    _createClass(Destroyable, [{
+        key: "destroy",
+        value: function destroy() {
+            // set properties to null to break references
+            for (var prop in this) {
+                if (this.hasOwnProperty(prop)) {
+                    delete this[prop];
+                }
+            }
+        }
+    }]);
+
+    return Destroyable;
+}();
+
+},{}],7:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.createsPositioningContext = exports.ieversion = exports.fixedPositionValue = exports.nativeStickyValue = undefined;
+
+var _prefix = require('./prefix');
+
+var _PositioningContext = require('./PositioningContext');
+
+var _PositioningContext2 = _interopRequireDefault(_PositioningContext);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// It will return null if position sticky is not supported
+var nativeStickyValue = exports.nativeStickyValue = _prefix.prefix.getCssValue('position', 'sticky');
+
+// It will return null if position fixed is not supported
+var fixedPositionValue = exports.fixedPositionValue = _prefix.prefix.getCssValue('position', 'fixed');
+
+// Dirty business
+var ie = navigator.appName === 'Microsoft Internet Explorer';
+var ieversion = exports.ieversion = void 0;
+
+if (ie) {
+    exports.ieversion = ieversion = parseFloat(navigator.appVersion.split("MSIE")[1]);
+}
+
+var createsPositioningContext = exports.createsPositioningContext = _PositioningContext2.default.createsContext();
+
+},{"./PositioningContext":3,"./prefix":13}],8:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -221,171 +492,82 @@ function removeEventListener(element, type, handler) {
     }
 }
 
-},{}],5:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.FixToContainer = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _base = require('./base');
+
+require('../libs/ftools/cssClass');
 
 var _mimicNode = require('./mimic-node');
 
 var _mimicNode2 = _interopRequireDefault(_mimicNode);
 
-var _prefix = require('./prefix');
+var _eventRegistration = require('./event-registration');
+
+require('computed-style');
+
+var _environment = require('./environment');
 
 var _PositioningContext = require('./PositioningContext');
 
 var _PositioningContext2 = _interopRequireDefault(_PositioningContext);
 
-var _eventRegistration = require('./event-registration');
-
-require('computed-style');
-
-require('../libs/ftools/cssClass');
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-window.fixto = function ($, window, document) {
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-    // Will hold if browser creates a positioning context for fixed elements.
-    var fixedPositioningContext = void 0;
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-    // It will return null if position sticky is not supported
-    var nativeStickyValue = _prefix.prefix.getCssValue('position', 'sticky');
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-    // It will return null if position fixed is not supported
-    var fixedPositionValue = _prefix.prefix.getCssValue('position', 'fixed');
+var classList = new ftools.CssClass();
 
-    var classList = new ftools.CssClass();
+// Class FixToContainer
 
-    // Dirty business
-    var ie = navigator.appName === 'Microsoft Internet Explorer';
-    var ieversion;
+var FixToContainer = exports.FixToContainer = function (_Fixto) {
+    _inherits(FixToContainer, _Fixto);
 
-    if (ie) {
-        ieversion = parseFloat(navigator.appVersion.split("MSIE")[1]);
-    }
+    function FixToContainer(child, options) {
+        _classCallCheck(this, FixToContainer);
 
-    function FixTo(child, parent, options) {
-        this._child = child;
-        this._parent = parent;
-        this._options = {
-            className: 'fixto-fixed',
-            top: 0,
-            mindViewport: false
-        };
-        this._setOptions(options);
-    }
+        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(FixToContainer).call(this, child, options));
 
-    FixTo.prototype = {
-        // Returns the total outerHeight of the elements passed to mind option. Will return 0 if none.
-        _mindtop: function _mindtop() {
-            var top = 0;
-            if (this._minds) {
-                var el;
-                var rect;
-                for (var i = 0, l = this._minds.length; i < l; i++) {
-                    el = this._minds[i];
-                    rect = el.getBoundingClientRect();
-                    if (rect.height) {
-                        top += rect.height;
-                    } else {
-                        var styles = computedStyle.getAll(el);
-                        top += el.offsetHeight + computedStyle.toFloat(styles.marginTop) + computedStyle.toFloat(styles.marginBottom);
-                    }
-                }
-            }
-            return top;
-        },
+        _this._replacer = new _mimicNode2.default(child);
+        _this._ghostNode = _this._replacer.replacer;
 
-        // Public method to stop the behaviour of this instance.
-        stop: function stop() {
-            this._stop();
-            this._running = false;
-        },
+        _this._saveStyles();
 
-        // Public method starts the behaviour of this instance.
-        start: function start() {
-
-            // Start only if it is not running not to attach event listeners multiple times.
-            if (!this._running) {
-                this._start();
-                this._running = true;
-            }
-        },
-
-        //Public method to destroy fixto behaviour
-        destroy: function destroy() {
-            this.stop();
-
-            this._destroy();
-
-            // Remove jquery data from the element
-            $(this._child).removeData('fixto-instance');
-
-            // set properties to null to break references
-            for (var prop in this) {
-                if (this.hasOwnProperty(prop)) {
-                    this[prop] = null;
-                }
-            }
-        },
-
-        _setOptions: function _setOptions(options) {
-            Object.assign(this._options, options);
-            if (this._options.mind) {
-                this._minds = document.querySelectorAll(this._options.mind);
-            }
-            if (this._options.zIndex) {
-                this._child.style.zIndex = this._options.zIndex;
-            }
-        },
-
-        setOptions: function setOptions(options) {
-            this._setOptions(options);
-            this.refresh();
-        },
-
-        // Methods could be implemented by subclasses
-
-        _stop: function _stop() {},
-
-        _start: function _start() {},
-
-        _destroy: function _destroy() {},
-
-        refresh: function refresh() {}
-    };
-
-    // Class FixToContainer
-    function FixToContainer(child, parent, options) {
-        FixTo.call(this, child, parent, options);
-        this._replacer = new _mimicNode2.default(child);
-        this._ghostNode = this._replacer.replacer;
-
-        this._saveStyles();
-
-        this._saveViewportHeight();
+        _this._saveViewportHeight();
 
         // Create anonymous functions and keep references to register and unregister events.
-        this._proxied_onscroll = this._bind(this._onscroll, this);
-        this._proxied_onresize = this._bind(this._onresize, this);
+        _this._proxied_onscroll = _this._bind(_this._onscroll, _this);
+        _this._proxied_onresize = _this._bind(_this._onresize, _this);
 
-        this.start();
+        _this.start();
+        return _this;
     }
 
-    FixToContainer.prototype = new FixTo();
+    // Returns an anonymous function that will call the given function in the given context
 
-    Object.assign(FixToContainer.prototype, {
 
-        // Returns an anonymous function that will call the given function in the given context
-        _bind: function _bind(fn, context) {
+    _createClass(FixToContainer, [{
+        key: '_bind',
+        value: function _bind(fn, context) {
             return function () {
                 return fn.call(context);
             };
-        },
-
-        // at ie8 maybe only in vm window resize event fires everytime an element is resized.
-        _toresize: ieversion === 8 ? document.documentElement : window,
-
-        _onscroll: function _onscroll() {
+        }
+    }, {
+        key: '_onscroll',
+        value: function _onscroll() {
             this._scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
             this._parentBottom = this._parent.offsetHeight + this._fullOffset('offsetTop', this._parent);
 
@@ -403,30 +585,33 @@ window.fixto = function ($, window, document) {
                 this._fix();
                 this._adjust();
             }
-        },
-
-        _shouldFix: function _shouldFix() {
+        }
+    }, {
+        key: '_shouldFix',
+        value: function _shouldFix() {
             if (this._scrollTop < this._parentBottom && this._scrollTop > this._fullOffset('offsetTop', this._child) - this._options.top - this._mindtop()) {
                 if (this._options.mindViewport && !this._isViewportAvailable()) {
                     return false;
                 }
                 return true;
             }
-        },
-
-        _isViewportAvailable: function _isViewportAvailable() {
+        }
+    }, {
+        key: '_isViewportAvailable',
+        value: function _isViewportAvailable() {
             var childStyles = computedStyle.getAll(this._child);
             return this._viewportHeight > this._child.offsetHeight + computedStyle.toFloat(childStyles.marginTop) + computedStyle.toFloat(childStyles.marginBottom);
-        },
-
-        _adjust: function _adjust() {
+        }
+    }, {
+        key: '_adjust',
+        value: function _adjust() {
             var top = 0;
             var mindTop = this._mindtop();
             var diff = 0;
             var childStyles = computedStyle.getAll(this._child);
             var context = null;
 
-            if (fixedPositioningContext) {
+            if (_environment.createsPositioningContext) {
                 // Get positioning context.
                 context = _PositioningContext2.default.getContext(this._child);
                 if (context) {
@@ -442,11 +627,14 @@ window.fixto = function ($, window, document) {
             }
 
             this._child.style.top = diff + mindTop + top + this._options.top - computedStyle.toFloat(childStyles.marginTop) + 'px';
-        },
+        }
 
         // Calculate cumulative offset of the element.
         // Optionally according to context
-        _fullOffset: function _fullOffset(offsetName, elm, context) {
+
+    }, {
+        key: '_fullOffset',
+        value: function _fullOffset(offsetName, elm, context) {
             var offset = elm[offsetName];
             var offsetParent = elm.offsetParent;
 
@@ -457,9 +645,10 @@ window.fixto = function ($, window, document) {
             }
 
             return offset;
-        },
-
-        _fix: function _fix() {
+        }
+    }, {
+        key: '_fix',
+        value: function _fix() {
             var child = this._child;
             var childStyle = child.style;
             var childStyles = computedStyle.getAll(child);
@@ -475,7 +664,7 @@ window.fixto = function ($, window, document) {
             }
 
             // Ie still fixes the container according to the viewport.
-            if (fixedPositioningContext) {
+            if (_environment.createsPositioningContext) {
                 var context = _PositioningContext2.default.getContext(this._child);
                 if (context) {
                     // There is a positioning context. Left should be according to the context.
@@ -492,9 +681,10 @@ window.fixto = function ($, window, document) {
             childStyle.top = this._mindtop() + this._options.top - computedStyle.toFloat(childStyles.marginTop) + 'px';
             classList.add(this._child, this._options.className);
             this.fixed = true;
-        },
-
-        _unfix: function _unfix() {
+        }
+    }, {
+        key: '_unfix',
+        value: function _unfix() {
             var childStyle = this._child.style;
             this._replacer.hide();
             childStyle.position = this._childOriginalPosition;
@@ -503,149 +693,135 @@ window.fixto = function ($, window, document) {
             childStyle.left = this._childOriginalLeft;
             classList.remove(this._child, this._options.className);
             this.fixed = false;
-        },
-
-        _saveStyles: function _saveStyles() {
+        }
+    }, {
+        key: '_saveStyles',
+        value: function _saveStyles() {
             var childStyle = this._child.style;
             this._childOriginalPosition = childStyle.position;
             this._childOriginalTop = childStyle.top;
             this._childOriginalWidth = childStyle.width;
             this._childOriginalLeft = childStyle.left;
-        },
-
-        _onresize: function _onresize() {
+        }
+    }, {
+        key: '_onresize',
+        value: function _onresize() {
             this.refresh();
-        },
-
-        _saveViewportHeight: function _saveViewportHeight() {
+        }
+    }, {
+        key: '_saveViewportHeight',
+        value: function _saveViewportHeight() {
             // ie8 doesn't support innerHeight
             this._viewportHeight = window.innerHeight || document.documentElement.clientHeight;
-        },
-
-        _stop: function _stop() {
+        }
+    }, {
+        key: '_stop',
+        value: function _stop() {
             // Unfix the container immediately.
             this._unfix();
             // remove event listeners
             (0, _eventRegistration.removeEventListener)(window, 'scroll', this._proxied_onscroll);
-            (0, _eventRegistration.removeEventListener)(this._toresize, 'resize', this._proxied_onresize);
-        },
-
-        _start: function _start() {
+            (0, _eventRegistration.removeEventListener)(window, 'resize', this._proxied_onresize);
+        }
+    }, {
+        key: '_start',
+        value: function _start() {
             // Trigger onscroll to have the effect immediately.
             this._onscroll();
 
             // Attach event listeners
             (0, _eventRegistration.addEventListener)(window, 'scroll', this._proxied_onscroll);
-            (0, _eventRegistration.addEventListener)(this._toresize, 'resize', this._proxied_onresize);
-        },
-
-        _destroy: function _destroy() {
+            (0, _eventRegistration.addEventListener)(window, 'resize', this._proxied_onresize);
+        }
+    }, {
+        key: '_destroy',
+        value: function _destroy() {
             // Destroy mimic node instance
             this._replacer.destroy();
-        },
-
-        refresh: function refresh() {
+        }
+    }, {
+        key: 'refresh',
+        value: function refresh() {
             this._saveViewportHeight();
             this._unfix();
             this._onscroll();
         }
-    });
+    }]);
 
-    function NativeSticky(child, parent, options) {
-        FixTo.call(this, child, parent, options);
-        this.start();
-    }
+    return FixToContainer;
+}(_base.Fixto);
 
-    NativeSticky.prototype = new FixTo();
+},{"../libs/ftools/cssClass":1,"./PositioningContext":3,"./base":4,"./environment":7,"./event-registration":8,"./mimic-node":11,"computed-style":2}],10:[function(require,module,exports){
+'use strict';
 
-    Object.assign(NativeSticky.prototype, {
-        _start: function _start() {
+var _base = require('./base');
 
-            var childStyles = computedStyle.getAll(this._child);
+var _fixtoContainer = require('./fixto-container');
 
-            this._childOriginalPosition = childStyles.position;
-            this._childOriginalTop = childStyles.top;
+var _native = require('./native');
 
-            this._child.style.position = nativeStickyValue;
-            this.refresh();
-        },
+var _collection = require('./collection');
 
-        _stop: function _stop() {
-            this._child.style.position = this._childOriginalPosition;
-            this._child.style.top = this._childOriginalTop;
-        },
+var _environment = require('./environment');
 
-        refresh: function refresh() {
-            this._child.style.top = this._mindtop() + this._options.top + 'px';
-        }
-    });
+window.fixto = function ($, window, document) {
 
-    var fixTo = function fixTo(childElement, parentElement, options) {
-        if (nativeStickyValue && !options || nativeStickyValue && options && options.useNativeSticky !== false) {
+    // Will hold if browser creates a positioning context for fixed elements.
+    var createsPositioningContext = void 0;
+
+    function getConstructor(options) {
+        if (_environment.nativeStickyValue && !options || _environment.nativeStickyValue && options && options.useNativeSticky !== false) {
             // Position sticky supported and user did not disabled the usage of it.
-            return new NativeSticky(childElement, parentElement, options);
-        } else if (fixedPositionValue) {
+            return _native.NativeSticky;
+        } else if (_environment.fixedPositionValue) {
             // Position fixed supported
 
-            if (fixedPositioningContext === undefined) {
-                // We don't know yet if browser creates fixed positioning contexts. Check it.
-                fixedPositioningContext = _PositioningContext2.default.createsContext();
+            // No support for ie lt 9.
+            if (_environment.ieversion < 9) {
+                // Return base class that does nothing but has necesssary methods so no error will be raised.
+                return _base.Fixto;
             }
 
-            return new FixToContainer(childElement, parentElement, options);
+            return _fixtoContainer.FixToContainer;
         } else {
-            return 'Neither fixed nor sticky positioning supported';
+            // Return base class that does nothing but has necesssary methods so no error will be raised.
+            return _base.Fixto;
         }
-    };
-
-    /*
-    No support for ie lt 8
-    */
-
-    if (ieversion < 8) {
-        fixTo = function fixTo() {
-            return 'not supported';
-        };
     }
 
     // Let it be a jQuery Plugin
-    $.fn.fixTo = function (targetSelector, options) {
+    $.fn.fixTo = function (methodOrOptions, options) {
 
-        var $targets = $(targetSelector);
+        var Constructor = getConstructor();
 
-        var i = 0;
         return this.each(function () {
 
+            var $this = $(this);
             // Check the data of the element.
-            var instance = $(this).data('fixto-instance');
+            var instance = $this.data('fixto-instance');
 
             // If the element is not bound to an instance, create the instance and save it to elements data.
             if (!instance) {
-                $(this).data('fixto-instance', fixTo(this, $targets[i], options));
+                $this.data('fixto-instance', new Constructor(this, methodOrOptions));
             } else {
-                // If we already have the instance here, expect that targetSelector parameter will be a string
-                // equal to a public methods name. Run the method on the instance without checking if
+                // If we already have the instance here, expect that methodOrOptions parameter will be a string
+                // equal to a public method name. Run the method on the instance without checking if
                 // it exists or it is a public method or not. Cause nasty errors when necessary.
-                var method = targetSelector;
-                instance[method].call(instance, options);
+                if (methodOrOptions === 'destroy') {
+                    // Remove jquery data from the element
+                    $this.removeData('fixto-instance');
+                }
+                instance[methodOrOptions].call(instance, options);
             }
-            i++;
         });
     };
 
-    /*
-        Expose
-    */
-
-    return {
-        FixToContainer: FixToContainer,
-        fixTo: fixTo,
-        computedStyle: computedStyle,
-        MimicNode: _mimicNode2.default
+    return function (selector, options) {
+        return new _collection.Collection(selector, options, getConstructor(options));
     };
 }(window.jQuery, window, document);
 
-},{"../libs/ftools/cssClass":1,"./PositioningContext":3,"./event-registration":4,"./mimic-node":6,"./prefix":7,"computed-style":2}],6:[function(require,module,exports){
+},{"./base":4,"./collection":5,"./environment":7,"./fixto-container":9,"./native":12}],11:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -734,7 +910,67 @@ if (!bcr.width) {
     MimicNode.prototype._height = MimicNode.prototype._heightOffset;
 }
 
-},{"computed-style":2}],7:[function(require,module,exports){
+},{"computed-style":2}],12:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.NativeSticky = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _base = require('./base');
+
+var _environment = require('./environment');
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var NativeSticky = exports.NativeSticky = function (_Fixto) {
+    _inherits(NativeSticky, _Fixto);
+
+    function NativeSticky(child, options) {
+        _classCallCheck(this, NativeSticky);
+
+        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(NativeSticky).call(this, child, options));
+
+        _this.start();
+        return _this;
+    }
+
+    _createClass(NativeSticky, [{
+        key: '_start',
+        value: function _start() {
+
+            var childStyles = computedStyle.getAll(this._child);
+
+            this._childOriginalPosition = childStyles.position;
+            this._childOriginalTop = childStyles.top;
+
+            this._child.style.position = _environment.nativeStickyValue;
+            this.refresh();
+        }
+    }, {
+        key: '_stop',
+        value: function _stop() {
+            this._child.style.position = this._childOriginalPosition;
+            this._child.style.top = this._childOriginalTop;
+        }
+    }, {
+        key: 'refresh',
+        value: function refresh() {
+            this._child.style.top = this._mindtop() + this._options.top + 'px';
+        }
+    }]);
+
+    return NativeSticky;
+}(_base.Fixto);
+
+},{"./base":4,"./environment":7}],13:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -861,4 +1097,4 @@ Prefix.prototype = {
 
 var prefix = exports.prefix = new Prefix();
 
-},{}]},{},[5]);
+},{}]},{},[10]);

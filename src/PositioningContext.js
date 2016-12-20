@@ -8,7 +8,7 @@ const transformJsProperty = prefix.getJsProperty('transform');
 class PositioningContext {
 
     constructor() {
-
+        this._createsContext = false;
     }
 
     // Checks if browser creates a positioning context for fixed elements.

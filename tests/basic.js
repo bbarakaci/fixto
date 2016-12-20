@@ -1,4 +1,3 @@
-var chromedriver = require('chromedriver');
 var webdriver = require('selenium-webdriver'),
     By = webdriver.By,
     until = webdriver.until;
@@ -29,7 +28,7 @@ var helper = {
 
 test.describe('Fixto', function () {
 
-    // this.timeout(50000);
+    //this.timeout(50000);
 
     test.after(function () {
         driver.quit();
@@ -115,5 +114,76 @@ test.describe('Fixto', function () {
             assert(value).equals('child');
         });
     });
+
+    test.it('should stop', function () {
+        driver.get(path + 'basic.html');
+        helper.scroll(100);
+        helper.getRect().then(function(rect) {
+            assert(rect.top).equals(0);
+        });
+        driver.executeScript(function() {
+            collection.stop();
+        });
+        helper.getRect().then(function(rect) {
+            assert(rect.top).equals(-100);
+        });
+    });
+
+    test.it('should start', function () {
+        driver.get(path + 'basic.html');
+        helper.scroll(100);
+        helper.getRect().then(function(rect) {
+            assert(rect.top).equals(0);
+        });
+        driver.executeScript(function() {
+            collection.stop();
+        });
+        helper.getRect().then(function(rect) {
+            assert(rect.top).equals(-100);
+        });
+        driver.executeScript(function() {
+            collection.start();
+        });
+        helper.getRect().then(function(rect) {
+            assert(rect.top).equals(0);
+        });
+    });
+
+    test.it('should destroy', function () {
+        driver.get(path + 'basic.html');
+        helper.scroll(100);
+        helper.getRect().then(function(rect) {
+            assert(rect.top).equals(0);
+        });
+        driver.executeScript(function() {
+            collection.destroy();
+        });
+        helper.getRect().then(function(rect) {
+            assert(rect.top).equals(-100);
+        });
+        driver.executeScript(function() {
+            count = 0;
+            for(var x in collection) {
+                count++;
+            }
+            return count;
+        }).then(function(value) {
+            assert(value).equals(0);
+        });
+    });
+
+
+    test.it('should refresh', function () {
+        driver.get(path + 'basic.html');
+        helper.scroll(100);
+        driver.executeScript(function() {
+            document.querySelector('.parent').style.width = '200px';
+            collection.refresh();
+        });
+        helper.getRect().then(function(rect) {
+            assert(rect.width).equals(200);
+        });
+    });
+
 });
 

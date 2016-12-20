@@ -37,17 +37,15 @@
 
 <script>
     $(function() {
-        var child = $('.sticky')[0];
-        var parent = $('body')[0];
-        var instance = window.fixto.fixTo(child, parent);
+        window.collection = fixto('.sticky');
         $('.stop').click(function () {
-            instance.stop();
+            collection.stop();
         });
         $('.start').click(function () {
-            instance.start();
+            collection.start();
         });
         $('.destroy').click(function () {
-            instance.destroy();
+            collection.destroy();
         });
     });
 </script>
