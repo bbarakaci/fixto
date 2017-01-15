@@ -13,6 +13,7 @@
     "geckodriver": "^1.2.0",
     "grunt": "^0.3.17",
     "http-server": "^0.9.0",
+    "mkdirp": "^0.5.1",
     "mocha": "^2.5.3",
     "selenium-webdriver": "^3.0.1",
     "watchify": "^3.7.0"
@@ -30,7 +31,7 @@
   "scripts": {
     "start": "http-server",
     "test": "mocha tests/basic.js",
-    "watch": "watchify src/fixto.js -o dist/fixto.js -t [ babelify --presets [ es2015 ] ]",
+    "watch": "mkdirp build && watchify src/fixto.js -o build/fixto.js -t [ babelify --presets [ es2015 ] ]",
     "lint": "eslint src"
   }
 }

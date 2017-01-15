@@ -1,12 +1,13 @@
 import {Fixto} from './base';
-import '../libs/ftools/cssClass';
+import CssClass from './CssClass';
 import MimicNode from './mimic-node';
 import {addEventListener, removeEventListener} from './event-registration';
 import 'computed-style';
+var computedStyle = window.computedStyle;
 import {createsPositioningContext} from './environment';
 import positioningContext from './PositioningContext';
 
-const classList = new ftools.CssClass();
+const classList = new CssClass();
 
 // Class FixToContainer
 export class FixToContainer extends Fixto {

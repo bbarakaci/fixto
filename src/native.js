@@ -1,5 +1,7 @@
 import {Fixto} from './base';
 import {nativeStickyValue} from './environment';
+import 'computed-style';
+var computedStyle = window.computedStyle;
 
 export class NativeSticky extends Fixto {
 

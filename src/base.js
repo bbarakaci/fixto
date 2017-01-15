@@ -1,4 +1,6 @@
 import {Destroyable} from './destroyable';
+import 'computed-style';
+var computedStyle = window.computedStyle;
 
 export class Fixto extends Destroyable {
 

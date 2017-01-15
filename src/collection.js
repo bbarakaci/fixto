@@ -1,5 +1,4 @@
 import {Destroyable} from './destroyable';
-import {getConstructor} from './environment';
 
 export class Collection extends Destroyable {
 

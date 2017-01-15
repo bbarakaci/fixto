@@ -4,10 +4,7 @@ import {NativeSticky} from './native';
 import {Collection} from './collection';
 import {nativeStickyValue, fixedPositionValue, ieversion} from './environment';
 
-window.fixto = (function ($, window, document) {
-
-    // Will hold if browser creates a positioning context for fixed elements.
-    let createsPositioningContext;
+window.fixto = (function ($) {
 
     function getConstructor(options) {
         if((nativeStickyValue && !options) || (nativeStickyValue && options && options.useNativeSticky !== false)) {
@@ -62,4 +59,4 @@ window.fixto = (function ($, window, document) {
         return new Collection(selector, options, getConstructor(options));
     }
 
-}(window.jQuery, window, document));
+}(window.jQuery));
