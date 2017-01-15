@@ -1,17 +1,19 @@
+import {Destroyable} from './destroyable';
 import 'computed-style';
 var computedStyle = window.computedStyle;
 
-export default function MimicNode(element) {
-    this._element = element;
-    this._replacer = document.createElement('div');
-    this._replacer.style.visibility = 'hidden';
-    this.hide();
-    element.parentNode.insertBefore(this._replacer, element);
-}
+export default class MimicNode extends Destroyable {
 
-MimicNode.prototype = {
+    constructor(element) {
+        super();
+        this._element = element;
+        this._replacer = document.createElement('div');
+        this._replacer.style.visibility = 'hidden';
+        this.hide();
+        element.parentNode.insertBefore(this._replacer, element);
+    }
 
-    replace : function() {
+    replace() {
         var rst = this._replacer.style;
         var styles = computedStyle.getAll(this._element);
 
@@ -34,44 +36,37 @@ MimicNode.prototype = {
         rst.left = styles.left;
 
         rst.display = styles.display;
+    }
 
-    },
-
-    hide: function () {
+    hide() {
         this._replacer.style.display = 'none';
-    },
+    }
 
-    _width : function(){
+    _width() {
         return this._element.getBoundingClientRect().width + 'px';
-    },
+    }
 
-    _widthOffset : function(){
+    _widthOffset() {
         return this._element.offsetWidth + 'px';
-    },
+    }
 
-    _height : function(){
+    _height() {
         return this._element.getBoundingClientRect().height + 'px';
-    },
+    }
 
-    _heightOffset : function(){
+    _heightOffset() {
         return this._element.offsetHeight + 'px';
-    },
-
-    destroy: function () {
-        this._replacer.parentNode.removeChild(this._replacer);
-
-        // set properties to null to break references
-        for (var prop in this) {
-            if (this.hasOwnProperty(prop)) {
-              this[prop] = null;
-            }
-        }
-    },
+    }
 
     get replacer() {
         return this._replacer;
     }
-};
+
+    destroy() {
+        this._replacer.parentNode.removeChild(this._replacer);
+        super.destroy()
+    }
+}
 
 var bcr = document.documentElement.getBoundingClientRect();
 if(!bcr.width){

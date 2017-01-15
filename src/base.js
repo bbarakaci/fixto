@@ -56,9 +56,7 @@ export class Fixto extends Destroyable {
     //Public method to destroy fixto behaviour
     destroy() {
         this.stop();
-
         this._destroy();
-
         super.destroy();
     }
 

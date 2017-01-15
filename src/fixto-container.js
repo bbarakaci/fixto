@@ -43,7 +43,7 @@ export class FixToContainer extends Fixto {
             this._parentBottom -= computedStyle.getFloat(this._parent, 'paddingBottom');
         }
 
-        if (this.fixed) {
+        if (this._fixed) {
             if (this._scrollTop > this._parentBottom || this._scrollTop < (this._fullOffset('offsetTop', this._ghostNode) - this._options.top - this._mindtop())) {
                 this._unfix();
                 return;
@@ -141,26 +141,19 @@ export class FixToContainer extends Fixto {
         childStyle.position = 'fixed';
         childStyle.top = this._mindtop() + this._options.top - computedStyle.toFloat(childStyles.marginTop) + 'px';
         classList.add(this._child, this._options.className);
-        this.fixed = true;
+        this._fixed = true;
     }
 
     _unfix() {
-        var childStyle = this._child.style;
+        Object.assign(this._child.style, this._styles);
         this._replacer.hide();
-        childStyle.position = this._childOriginalPosition;
-        childStyle.top = this._childOriginalTop;
-        childStyle.width = this._childOriginalWidth;
-        childStyle.left = this._childOriginalLeft;
         classList.remove(this._child, this._options.className);
-        this.fixed = false;
+        this._fixed = false;
     }
 
     _saveStyles() {
-        var childStyle = this._child.style;
-        this._childOriginalPosition = childStyle.position;
-        this._childOriginalTop = childStyle.top;
-        this._childOriginalWidth = childStyle.width;
-        this._childOriginalLeft = childStyle.left;
+        const {position, top, left, width} = this._child.style;
+        this._styles = {position, top, left, width}
     }
 
     _onresize() {
