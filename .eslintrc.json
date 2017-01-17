@@ -8,6 +8,6 @@
         "browser": "true"
     },
     "rules": {
-        
+        "semi": ["error", "always"]
     }
 }

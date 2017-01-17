@@ -98,4 +98,4 @@ CssClass.prototype = {
     }
 };
 
-export default CssClass
+export default CssClass;

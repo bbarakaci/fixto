@@ -64,7 +64,7 @@ export default class MimicNode extends Destroyable {
 
     destroy() {
         this._replacer.parentNode.removeChild(this._replacer);
-        super.destroy()
+        super.destroy();
     }
 }
 
