@@ -57,6 +57,6 @@ window.fixto = (function ($) {
 
     return function(selector, options) {
         return new Collection(selector, options, getConstructor(options));
-    }
+    };
 
 }(window.jQuery));

@@ -153,7 +153,7 @@ export class FixToContainer extends Fixto {
 
     _saveStyles() {
         const {position, top, left, width} = this._child.style;
-        this._styles = {position, top, left, width}
+        this._styles = {position, top, left, width};
     }
 
     _onresize() {

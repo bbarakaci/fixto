@@ -24,7 +24,7 @@ var helper = {
             });
         });
     }
-}
+};
 
 test.describe('Fixto', function () {
 
